@@ -115,6 +115,13 @@
       line-height: 1.2;
     }
 
+    .app-subtitle {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--muted);
+      line-height: 1.2;
+    }
+
     .child-badge {
       font-size: 0.72rem;
       font-weight: 600;
@@ -774,11 +781,8 @@
   <!-- Cabecera Fija -->
   <header class="app-header">
     <div class="brand-wrap">
-      <h1>Registro de eventos y crisis</h1>
-      <span class="app-subtitle" style="font-size:0.72rem; color:var(--muted); font-weight:500;">por Robert Pacheco</span>
-      <div class="child-badge" id="childBadgeHeader" style="display:none;">
-        <span class="child-pill" id="childPillText"></span>
-      </div>
+      <h1 id="appTitleHeader">Registro de eventos y crisis</h1>
+      <div class="app-subtitle">por Robert Pacheco</div>
     </div>
     <div class="header-actions">
       <button type="button" class="btn-rescue" onclick="abrirModal('rescueModal')" title="Guía rápida de rescate">

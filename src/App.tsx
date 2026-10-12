@@ -123,6 +123,10 @@ export default function App() {
   // Toast
   const [toast, setToast] = useState<ToastState | null>(null);
 
+  // PWA Install Prompt Banner
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState<boolean>(false);
+
   const showToast = (message: string, type: 'success' | 'danger' | 'info' = 'info') => {
     setToast({ message, type });
   };
@@ -294,14 +298,58 @@ export default function App() {
       showToast('✓ Conexión a internet restablecida.', 'success');
     };
 
+    // Captura del evento beforeinstallprompt para banner nativo
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      try {
+        const dismissed = sessionStorage.getItem('pwa_banner_dismissed');
+        if (!dismissed) {
+          setShowInstallBanner(true);
+        }
+      } catch {
+        setShowInstallBanner(true);
+      }
+    };
+
+    const handleAppInstalled = () => {
+      setShowInstallBanner(false);
+      setDeferredPrompt(null);
+      showToast('¡Aplicación agregada a la pantalla de inicio!', 'success');
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
     window.addEventListener('offline', handleOffline);
     window.addEventListener('online', handleOnline);
 
     return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener('online', handleOnline);
     };
   }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    try {
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      if (choice && choice.outcome === 'accepted') {
+        setShowInstallBanner(false);
+      }
+    } catch {}
+    setDeferredPrompt(null);
+  };
+
+  const handleDismissBanner = () => {
+    setShowInstallBanner(false);
+    try {
+      sessionStorage.setItem('pwa_banner_dismissed', 'true');
+    } catch {}
+  };
 
   // 3. Cargar datos locales al iniciar
   useEffect(() => {
@@ -864,13 +912,8 @@ export default function App() {
       {/* Cabecera Premium Fija */}
       <header className="app-header">
         <div className="brand-wrap">
-          <h1>Registro de eventos y crisis</h1>
-          <span className="app-subtitle">por Robert Pacheco</span>
-          {profile.childName && (
-            <div className="child-badge">
-              <span className="child-pill">Registro de {profile.childName}</span>
-            </div>
-          )}
+          <h1>{profile.childName.trim() ? `Registro de ${profile.childName.trim()}` : 'Registro de eventos y crisis'}</h1>
+          <div className="app-subtitle">por Robert Pacheco</div>
         </div>
 
         <div className="header-actions">
@@ -950,7 +993,7 @@ export default function App() {
                 className={`timer-btn ${isTimerRunning ? 'timer-btn-stop' : 'timer-btn-start'}`}
                 onClick={handleToggleTimer}
               >
-                {isTimerRunning ? '⏹ Detener y Calcular' : '⏱ Iniciar Registro'}
+                {isTimerRunning ? '⏹ Detener y Calcular' : '▶ Iniciar Registro'}
               </button>
 
               {isTimerRunning && (
@@ -1181,7 +1224,7 @@ export default function App() {
               </div>
 
               <button type="submit" className="btn">
-                💾 Guardar Registro
+                💾 Guardar Evento
               </button>
             </form>
 
@@ -1610,6 +1653,27 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* Banner flotante de instalación PWA en Android / Chrome */}
+      {showInstallBanner && (
+        <div className="install-banner">
+          <div className="install-banner-content">
+            <span className="install-banner-icon">📲</span>
+            <div className="install-banner-text">
+              <p className="install-banner-title">Instala esta aplicación</p>
+              <p className="install-banner-desc">Instala esta aplicación en tu pantalla de inicio para acceso inmediato y sin conexión.</p>
+            </div>
+          </div>
+          <div className="install-banner-actions">
+            <button type="button" className="btn-install-secondary" onClick={handleDismissBanner}>
+              Ahora no
+            </button>
+            <button type="button" className="btn-install-primary" onClick={handleInstallClick}>
+              Instalar ahora
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Barra de Navegación Inferior Fija (Bottom Nav Bar) */}
       <nav className="bottom-nav">

@@ -913,7 +913,6 @@ export default function App() {
       <header className="app-header">
         <div className="brand-wrap">
           <h1>{profile.childName.trim() ? `Registro de ${profile.childName.trim()}` : 'Registro de eventos y crisis'}</h1>
-          <div className="app-subtitle">por Robert Pacheco</div>
         </div>
 
         <div className="header-actions">
@@ -1703,6 +1702,37 @@ export default function App() {
         </button>
       </nav>
 
+      {/* Banner Flotante de Instalación PWA en Android / Chrome */}
+      {showInstallBanner && (
+        <aside className="install-banner" role="alert">
+          <div className="install-banner-content">
+            <span className="install-banner-icon">📲</span>
+            <div className="install-banner-text">
+              <span className="install-banner-title">Acceso rápido</span>
+              <span className="install-banner-desc">
+                📲 Instala esta aplicación en tu pantalla de inicio para acceso inmediato y sin conexión.
+              </span>
+            </div>
+          </div>
+          <div className="install-banner-actions">
+            <button
+              type="button"
+              className="btn-install-secondary"
+              onClick={handleDismissBanner}
+            >
+              Ahora no
+            </button>
+            <button
+              type="button"
+              className="btn-install-primary"
+              onClick={handleInstallClick}
+            >
+              Instalar ahora
+            </button>
+          </div>
+        </aside>
+      )}
+
       {/* Toast Notification Flotante */}
       {toast && (
         <div className="toast-container">
@@ -1774,11 +1804,11 @@ export default function App() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="diagnosisNotes">Diagnóstico / Notas</label>
+                  <label htmlFor="diagnosisNotes">Notas del perfil</label>
                   <input
                     type="text"
                     id="diagnosisNotes"
-                    placeholder="ej. TEA N1 / Sensibilidad auditiva"
+                    placeholder="ej. Sensibilidad auditiva, notas..."
                     value={profile.diagnosisNotes}
                     onChange={(e) => setProfile({ ...profile, diagnosisNotes: e.target.value })}
                   />

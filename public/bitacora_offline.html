@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="Registro Crisis">
   
   <!-- 1. PWA Manifest Nativo (Data-URI) -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Registro%20de%20eventos%20y%20crisis%22%2C%22short_name%22%3A%22Registro%20Crisis%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%3E%3Crect%20width%3D'512'%20height%3D'512'%20rx%3D'100'%20fill%3D'%23090d16'%2F%3E%3Ccircle%20cx%3D'256'%20cy%3D'256'%20r%3D'160'%20fill%3D'%23131b2e'%20stroke%3D'%2338bdf8'%20stroke-width%3D'24'%2F%3E%3Cpath%20d%3D'M256%20160v96l64%2064'%20stroke%3D'%23f43f5e'%20stroke-width%3D'24'%20stroke-linecap%3D'round'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Registro%20de%20eventos%20y%20crisis%22%2C%22short_name%22%3A%22Registro%20Crisis%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%3E%3Crect%20width%3D'512'%20height%3D'512'%20rx%3D'100'%20fill%3D'%23090d16'%2F%3E%3Ccircle%20cx%3D'256'%20cy%3D'256'%20r%3D'160'%20fill%3D'%23131b2e'%20stroke%3D'%2338bdf8'%20stroke-width%3D'24'%2F%3E%3Cpath%20d%3D'M256%20160v96l64%2064'%20stroke%3D'%23f43f5e'%20stroke-width%3D'24'%20stroke-linecap%3D'round'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
 
   <style>
     :root {
@@ -112,13 +112,6 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      line-height: 1.2;
-    }
-
-    .app-subtitle {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--muted);
       line-height: 1.2;
     }
 
@@ -766,6 +759,85 @@
 
     .toast.toast-success { border-color: var(--success); }
     .toast.toast-danger { border-color: var(--danger); }
+
+    /* PWA Install Banner */
+    .install-banner {
+      position: fixed;
+      bottom: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 20px);
+      max-width: 540px;
+      z-index: 1100;
+      background: var(--card);
+      border: 1.5px solid var(--accent);
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .install-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .install-banner-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .install-banner-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .install-banner-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .install-banner-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+
+    .install-banner-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .btn-install-primary {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .btn-install-secondary {
+      background: var(--card-subtle);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.82rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
   </style>
 </head>
 <body>
@@ -782,7 +854,6 @@
   <header class="app-header">
     <div class="brand-wrap">
       <h1 id="appTitleHeader">Registro de eventos y crisis</h1>
-      <div class="app-subtitle">por Robert Pacheco</div>
     </div>
     <div class="header-actions">
       <button type="button" class="btn-rescue" onclick="abrirModal('rescueModal')" title="Guía rápida de rescate">
@@ -1043,6 +1114,21 @@
     </button>
   </nav>
 
+  <!-- Banner Flotante de Instalación PWA en Android / Chrome -->
+  <aside class="install-banner" id="pwaInstallBanner" style="display:none;" role="alert">
+    <div class="install-banner-content">
+      <span class="install-banner-icon">📲</span>
+      <div class="install-banner-text">
+        <span class="install-banner-title">Acceso rápido</span>
+        <span class="install-banner-desc">📲 Instala esta aplicación en tu pantalla de inicio para acceso inmediato y sin conexión.</span>
+      </div>
+    </div>
+    <div class="install-banner-actions">
+      <button type="button" class="btn-install-secondary" onclick="descartarBannerInstalacion()">Ahora no</button>
+      <button type="button" class="btn-install-primary" onclick="instalarAppPWA()">Instalar ahora</button>
+    </div>
+  </aside>
+
   <!-- Toast Notification Flotante -->
   <div class="toast-container" id="toastContainer" style="display:none;">
     <div class="toast" id="toastBox">
@@ -1103,8 +1189,8 @@
             <input type="text" id="birthDateOrAge" placeholder="ej. 8 años">
           </div>
           <div>
-            <label for="diagnosisNotes">Diagnóstico / Notas</label>
-            <input type="text" id="diagnosisNotes" placeholder="ej. TEA N1 / Sensibilidad auditiva">
+            <label for="diagnosisNotes">Notas del perfil</label>
+            <input type="text" id="diagnosisNotes" placeholder="ej. Sensibilidad auditiva, notas...">
           </div>
         </div>
 
@@ -1235,6 +1321,50 @@
     window.addEventListener('online', () => {
       mostrarToast('✓ Conexión a internet restablecida.', 'success');
     });
+  }
+
+  // PWA Install Prompt Banner
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    try {
+      if (!sessionStorage.getItem('pwa_banner_dismissed')) {
+        const b = document.getElementById('pwaInstallBanner');
+        if (b) b.style.display = 'flex';
+      }
+    } catch {
+      const b = document.getElementById('pwaInstallBanner');
+      if (b) b.style.display = 'flex';
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    const b = document.getElementById('pwaInstallBanner');
+    if (b) b.style.display = 'none';
+    deferredPrompt = null;
+    mostrarToast('¡Aplicación agregada a la pantalla de inicio!', 'success');
+  });
+
+  async function instalarAppPWA() {
+    if (!deferredPrompt) return;
+    try {
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      if (choice && choice.outcome === 'accepted') {
+        const b = document.getElementById('pwaInstallBanner');
+        if (b) b.style.display = 'none';
+      }
+    } catch {}
+    deferredPrompt = null;
+  }
+
+  function descartarBannerInstalacion() {
+    const b = document.getElementById('pwaInstallBanner');
+    if (b) b.style.display = 'none';
+    try {
+      sessionStorage.setItem('pwa_banner_dismissed', 'true');
+    } catch {}
   }
 
   // Estado global

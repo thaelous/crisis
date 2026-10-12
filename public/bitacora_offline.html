@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bitácora Regulación</title>
+  <meta name="description" content="Herramienta clínica y de registro de desregulación para padres de niños con TEA nivel 1 y TDAH.">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Bitácora Regulación">
+  
+  <!-- 1. PWA Manifest Nativo Data-URI -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Bit%C3%A1cora%20Regulaci%C3%B3n%22%2C%22short_name%22%3A%22Regulaci%C3%B3n%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%3E%3Crect%20width%3D'512'%20height%3D'512'%20rx%3D'100'%20fill%3D'%230f172a'%2F%3E%3Ccircle%20cx%3D'256'%20cy%3D'256'%20r%3D'160'%20fill%3D'%231e293b'%20stroke%3D'%2338bdf8'%20stroke-width%3D'24'%2F%3E%3Cpath%20d%3D'M256%20160v96l64%2064'%20stroke%3D'%23f43f5e'%20stroke-width%3D'24'%20stroke-linecap%3D'round'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --accent-peak: #f43f5e;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --danger: #f43f5e;
+      --success: #10b981;
+    }
+    * { 
+      box-sizing: border-box; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+    body { 
+      background-color: var(--bg); 
+      color: var(--text); 
+      padding: 14px; 
+      display: flex; 
+      justify-content: center; 
+      min-height: 100vh; 
+    }
+    .container { 
+      width: 100%; 
+      max-width: 580px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 14px; 
+    }
+    
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    h1 { 
+      font-size: 1.25rem; 
+      font-weight: 700; 
+      color: var(--accent); 
+    }
+    .subtitle { 
+      font-size: 0.75rem; 
+      color: var(--muted); 
+      margin-top: 2px; 
+    }
+    
+    /* Cronómetro Superior */
+    .timer-box {
+      background: linear-gradient(180deg, #1e293b 0%, #152136 100%);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+    .timer-box.active {
+      border-color: var(--accent-peak);
+      box-shadow: 0 0 16px rgba(244, 63, 94, 0.25);
+    }
+    .timer-btn {
+      width: 100%;
+      padding: 14px 16px;
+      min-height: 52px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+    .timer-btn-start { 
+      background: var(--accent); 
+      color: #0f172a; 
+    }
+    .timer-btn-start:active { 
+      opacity: 0.85; 
+      transform: scale(0.98); 
+    }
+    .timer-btn-stop {
+      background: var(--accent-peak);
+      color: #ffffff;
+      animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .timer-btn-stop:active { 
+      opacity: 0.9; 
+      transform: scale(0.98); 
+    }
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.5); }
+      50% { box-shadow: 0 0 0 8px rgba(244, 63, 94, 0); }
+    }
+    .timer-time-display {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--accent-peak);
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+    .timer-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .timer-badge.running {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-peak);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+    .timer-alert {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--success);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Pestañas */
+    .tabs { 
+      display: flex; 
+      gap: 8px; 
+      border-bottom: 1px solid var(--border); 
+      padding-bottom: 8px; 
+    }
+    .tab-btn {
+      background: transparent; 
+      border: none; 
+      color: var(--muted); 
+      font-size: 0.95rem;
+      font-weight: 600; 
+      padding: 8px 14px; 
+      cursor: pointer; 
+      border-radius: 8px;
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active { 
+      background: var(--card); 
+      color: var(--accent); 
+    }
+
+    .card {
+      background-color: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 12px;
+      padding: 16px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px;
+    }
+    label { 
+      font-size: 0.8rem; 
+      font-weight: 600; 
+      color: var(--muted); 
+      text-transform: uppercase; 
+      letter-spacing: 0.05em; 
+    }
+    input, textarea {
+      width: 100%; 
+      background: #0f172a; 
+      border: 1px solid var(--border); 
+      border-radius: 8px;
+      color: var(--text); 
+      padding: 11px; 
+      font-size: 0.95rem; 
+      outline: none; 
+      margin-top: 4px;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 60px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    
+    .btn {
+      background: var(--accent); 
+      color: #0f172a; 
+      border: none; 
+      font-weight: 700; 
+      font-size: 1rem;
+      padding: 14px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      text-align: center; 
+      min-height: 48px;
+      transition: opacity 0.15s;
+    }
+    .btn:active { opacity: 0.85; }
+    .btn-secondary {
+      background: transparent; 
+      border: 1px solid var(--border); 
+      color: var(--text);
+      font-size: 0.8rem; 
+      padding: 7px 12px; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      min-height: 36px;
+    }
+    .btn-danger {
+      background: transparent; 
+      border: 1px solid var(--danger); 
+      color: var(--danger);
+      font-size: 0.75rem; 
+      padding: 5px 10px; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      min-height: 32px;
+    }
+
+    /* Historial */
+    .item { 
+      border-left: 3px solid var(--accent); 
+      padding-left: 12px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 4px; 
+    }
+    .item-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      font-size: 0.85rem; 
+      color: var(--muted); 
+    }
+    .item-title { 
+      font-weight: 600; 
+      color: var(--text); 
+      font-size: 0.95rem; 
+    }
+
+    /* Gráficos de barras nativos */
+    .bar-chart { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; }
+    .bar-label { width: 55px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+    .bar-track { flex: 1; background: #0f172a; height: 16px; border-radius: 4px; overflow: hidden; display: flex; }
+    .bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; }
+    .bar-fill.peak { background: var(--accent-peak); }
+    .bar-val { width: 24px; color: var(--text); font-weight: 600; }
+
+    /* Métricas */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+    .stat-box { background: #0f172a; padding: 12px 6px; border-radius: 8px; border: 1px solid var(--border); }
+    .stat-num { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+    .stat-desc { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Datalists para sugerencias inteligentes previas -->
+  <datalist id="dl-chispa"></datalist>
+  <datalist id="dl-lugar"></datalist>
+  <datalist id="dl-carga"></datalist>
+  <datalist id="dl-ayudo"></datalist>
+  <datalist id="dl-empeoro"></datalist>
+
+  <header>
+    <div>
+      <h1>Bitácora de Regulación</h1>
+      <div class="subtitle">Herramienta clínica TEA Nivel 1 & TDAH</div>
+    </div>
+    <button class="btn-secondary" onclick="exportarCSV()">Exportar CSV</button>
+  </header>
+
+  <!-- 3. CRONÓMETRO DE CRISIS (Acceso rápido superior) -->
+  <section class="timer-box" id="timerContainer">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <label style="margin:0;">Cronómetro de Crisis</label>
+      <span class="timer-badge" id="timerBadge" style="display:none;">
+        <span style="width:8px; height:8px; border-radius:50%; background:var(--accent-peak); display:inline-block;"></span>
+        En curso
+      </span>
+      <span id="timerHint" style="font-size:0.75rem; color:var(--muted);">Acceso táctil rápido</span>
+    </div>
+
+    <div id="timerDisplayWrap" style="display:none; flex-direction:column; align-items:center; gap:4px;">
+      <div class="timer-time-display" id="timerDisplay">00:00</div>
+      <div id="timerStartInfo" style="font-size:0.8rem; color:var(--muted);"></div>
+    </div>
+
+    <button type="button" class="timer-btn timer-btn-start" id="btnTimer" onclick="toggleTimer()">
+      ⏱ Iniciar Crisis
+    </button>
+
+    <div id="timerCancelWrap" style="display:none; justify-content:center;">
+      <button type="button" onclick="cancelarTimer()" style="background:transparent; border:none; color:var(--muted); font-size:0.75rem; text-decoration:underline; cursor:pointer; padding:4px;">
+        Cancelar cronómetro sin calcular
+      </button>
+    </div>
+
+    <div class="timer-alert" id="timerAlert" style="display:none;">
+      <span id="timerAlertText"></span>
+      <button type="button" onclick="cerrarAlertaTimer()" style="background:transparent; border:none; color:var(--text); cursor:pointer; font-size:1rem; line-height:1;">×</button>
+    </div>
+  </section>
+
+  <!-- PESTAÑAS -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tabRegistroBtn" onclick="cambiarVista('registro')">Registro</button>
+    <button class="tab-btn" id="tabAnalisisBtn" onclick="cambiarVista('analisis')">Análisis y Gráficas</button>
+  </div>
+
+  <!-- 4. SECCIÓN: REGISTRO RÁPIDO -->
+  <div id="vistaRegistro" style="display:flex; flex-direction:column; gap:14px;">
+    <form id="logForm" class="card" onsubmit="guardarRegistro(event)">
+      <div class="grid">
+        <div>
+          <label for="fechaHora">Fecha y Hora</label>
+          <input type="datetime-local" id="fechaHora" required>
+        </div>
+        <div>
+          <label for="duracion">Duración (min)</label>
+          <input type="number" id="duracion" placeholder="ej. 15" min="1" required>
+        </div>
+      </div>
+
+      <div>
+        <label for="chispa">Detonante visible inmediato ("Chispa")</label>
+        <input type="text" id="chispa" list="dl-chispa" placeholder="ej. Transición abrupta / apagar pantalla" autocomplete="off" required>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label for="lugar">Lugar</label>
+          <input type="text" id="lugar" list="dl-lugar" placeholder="ej. Escuela, sala, auto" autocomplete="off">
+        </div>
+        <div>
+          <label for="carga">Carga previa (HALT / Basal)</label>
+          <input type="text" id="carga" list="dl-carga" placeholder="ej. Sueño deficiente, hambre, sobrecarga" autocomplete="off">
+        </div>
+      </div>
+
+      <div>
+        <label for="conducta">Conducta observada</label>
+        <textarea id="conducta" placeholder="ej. Desconexión, mirada fija, agresión reactiva o gritos"></textarea>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label for="ayudo">Qué ayudó a regularlo</label>
+          <input type="text" id="ayudo" list="dl-ayudo" placeholder="ej. Silencio, cuarto oscuro, cobija pesada" autocomplete="off">
+        </div>
+        <div>
+          <label for="empeoro">Qué lo empeoró</label>
+          <input type="text" id="empeoro" list="dl-empeoro" placeholder="ej. Querer razonar con él, insistir verbalmente" autocomplete="off">
+        </div>
+      </div>
+
+      <button type="submit" class="btn">Guardar Episodio</button>
+    </form>
+
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>Historial reciente</label>
+        <span id="contador" style="font-size:0.8rem; color:var(--muted);">0 eventos</span>
+      </div>
+      <div id="listaRegistros" style="display:flex; flex-direction:column; gap:14px;"></div>
+    </div>
+  </div>
+
+  <!-- 6. SECCIÓN: ANÁLISIS DE PATRONES (DASHBOARD) -->
+  <div id="vistaAnalisis" style="display:none; flex-direction:column; gap:14px;">
+    <!-- Tarjetas de métricas -->
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-desc">Total crisis</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statPromedio">0 m</div>
+        <div class="stat-desc">Prom. duración</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statPico">--</div>
+        <div class="stat-desc">Hora crítica</div>
+      </div>
+    </div>
+
+    <!-- Gráfico Horario con resalte en color de contraste/coral -->
+    <div class="card">
+      <label>Distribución por franja horaria (Hora del día)</label>
+      <p style="font-size:0.8rem; color:var(--muted);">Permite identificar bajadas de glucosa o picos de fatiga ejecutiva.</p>
+      <div class="bar-chart" id="chartHoras"></div>
+    </div>
+
+    <!-- Gráfico Días de la Semana -->
+    <div class="card">
+      <label>Distribución por día de la semana</label>
+      <div class="bar-chart" id="chartDias"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* 1. Service Worker registrado dinámicamente mediante Blob para PWA */
+  if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+    try {
+      const swCode = `
+        const CACHE_NAME = 'regulacion-pwa-v1';
+        self.addEventListener('install', (e) => self.skipWaiting());
+        self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
+        self.addEventListener('fetch', (e) => {
+          e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+        });
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(swUrl).catch(() => {});
+    } catch (e) {}
+  }
+
+  /* 2. Catálogo de sugerencias iniciales y aprendizaje continuo */
+  const DEFAULT_SUGGESTIONS = {
+    chispa: [
+      'Transición abrupta de actividad',
+      'Apagar pantalla / tiempo fuera',
+      'Sobrecarga de ruidos / lugar concurrido',
+      'Frustración académica o motriz',
+      'Cambio inesperado en la rutina',
+      'Negación ante una petición o límite'
+    ],
+    lugar: [
+      'Casa / Sala',
+      'Escuela / Salón de clases',
+      'Auto / En trayecto',
+      'Supermercado / Centro comercial',
+      'Parque / Exterior',
+      'Casa de familiares'
+    ],
+    carga: [
+      'Sueño deficiente / mal descanso',
+      'Hambre / glucosa baja (HALT)',
+      'Sobrecarga sensorial acumulada',
+      'Exceso de demandas cognitivas',
+      'Dolor físico o malestar estomacal'
+    ],
+    ayudo: [
+      'Espacio en penumbra y silencio total',
+      'Cobija de peso / presión propioceptiva',
+      'Acompañamiento en calma sin hablar',
+      'Ofrecer agua fría y tiempo a solas',
+      'Música suave o audífonos con cancelación',
+      'Validar emoción en voz muy baja'
+    ],
+    empeoro: [
+      'Querer razonar con él durante la crisis',
+      'Insistir en contacto visual',
+      'Subir el volumen de voz o amenazar',
+      'Hacer múltiples preguntas seguidas',
+      'Contener físicamente con fuerza'
+    ]
+  };
+
+  let timerInterval = null;
+  let timerStartMs = null;
+
+  function toLocalISOString(date) {
+    const d = new Date(date);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 16);
+  }
+
+  function setFechaActual() {
+    document.getElementById('fechaHora').value = toLocalISOString(new Date());
+  }
+
+  function getRegistros() {
+    try {
+      return JSON.parse(localStorage.getItem('meltdown_logs') || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function getSuggestions() {
+    try {
+      const stored = localStorage.getItem('suggestions_catalog');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          chispa: Array.from(new Set([...(parsed.chispa || []), ...DEFAULT_SUGGESTIONS.chispa])),
+          lugar: Array.from(new Set([...(parsed.lugar || []), ...DEFAULT_SUGGESTIONS.lugar])),
+          carga: Array.from(new Set([...(parsed.carga || []), ...DEFAULT_SUGGESTIONS.carga])),
+          ayudo: Array.from(new Set([...(parsed.ayudo || []), ...DEFAULT_SUGGESTIONS.ayudo])),
+          empeoro: Array.from(new Set([...(parsed.empeoro || []), ...DEFAULT_SUGGESTIONS.empeoro]))
+        };
+      }
+    } catch (e) {}
+    return DEFAULT_SUGGESTIONS;
+  }
+
+  function renderDatalists() {
+    const sugg = getSuggestions();
+    renderDatalistOptions('dl-chispa', sugg.chispa);
+    renderDatalistOptions('dl-lugar', sugg.lugar);
+    renderDatalistOptions('dl-carga', sugg.carga);
+    renderDatalistOptions('dl-ayudo', sugg.ayudo);
+    renderDatalistOptions('dl-empeoro', sugg.empeoro);
+  }
+
+  function renderDatalistOptions(id, items) {
+    const dl = document.getElementById(id);
+    if (!dl) return;
+    dl.innerHTML = '';
+    (items || []).forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item;
+      dl.appendChild(opt);
+    });
+  }
+
+  function updateSuggestionsCatalog(nuevo) {
+    const current = getSuggestions();
+    const fields = ['chispa', 'lugar', 'carga', 'ayudo', 'empeoro'];
+    fields.forEach(f => {
+      const val = (nuevo[f] || '').trim();
+      if (val && !current[f].includes(val)) {
+        current[f].unshift(val);
+      }
+    });
+    try {
+      localStorage.setItem('suggestions_catalog', JSON.stringify(current));
+    } catch (e) {}
+    renderDatalists();
+  }
+
+  /* 3. Cronómetro persistente */
+  function initTimer() {
+    const saved = localStorage.getItem('crisis_timer_start');
+    if (saved) {
+      const ms = parseInt(saved, 10);
+      if (!isNaN(ms) && ms > 0) {
+        timerStartMs = ms;
+        document.getElementById('fechaHora').value = toLocalISOString(new Date(timerStartMs));
+        setTimerUIActive(true);
+        startTimerTicker();
+      }
+    }
+  }
+
+  function formatTime(totalSecs) {
+    const m = Math.floor(totalSecs / 60);
+    const s = totalSecs % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+
+  function startTimerTicker() {
+    if (timerInterval) clearInterval(timerInterval);
+    updateTimerDisplay();
+    timerInterval = setInterval(updateTimerDisplay, 1000);
+  }
+
+  function updateTimerDisplay() {
+    if (!timerStartMs) return;
+    const elapsedSecs = Math.max(0, Math.floor((Date.now() - timerStartMs) / 1000));
+    document.getElementById('timerDisplay').innerText = formatTime(elapsedSecs);
+  }
+
+  function setTimerUIActive(isActive) {
+    const container = document.getElementById('timerContainer');
+    const btn = document.getElementById('btnTimer');
+    const badge = document.getElementById('timerBadge');
+    const hint = document.getElementById('timerHint');
+    const displayWrap = document.getElementById('timerDisplayWrap');
+    const cancelWrap = document.getElementById('timerCancelWrap');
+    const startInfo = document.getElementById('timerStartInfo');
+
+    if (isActive) {
+      container.classList.add('active');
+      btn.className = 'timer-btn timer-btn-stop';
+      btn.innerHTML = '⏹ Detener y Calcular';
+      badge.className = 'timer-badge running';
+      badge.style.display = 'inline-flex';
+      hint.style.display = 'none';
+      displayWrap.style.display = 'flex';
+      cancelWrap.style.display = 'flex';
+      const d = new Date(timerStartMs);
+      startInfo.innerText = `Iniciada a las ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+    } else {
+      container.classList.remove('active');
+      btn.className = 'timer-btn timer-btn-start';
+      btn.innerHTML = '⏱ Iniciar Crisis';
+      badge.style.display = 'none';
+      hint.style.display = 'inline';
+      displayWrap.style.display = 'none';
+      cancelWrap.style.display = 'none';
+    }
+  }
+
+  function toggleTimer() {
+    if (!timerStartMs) {
+      timerStartMs = Date.now();
+      localStorage.setItem('crisis_timer_start', String(timerStartMs));
+      document.getElementById('fechaHora').value = toLocalISOString(new Date(timerStartMs));
+      setTimerUIActive(true);
+      startTimerTicker();
+      cerrarAlertaTimer();
+    } else {
+      if (timerInterval) clearInterval(timerInterval);
+      const totalSecs = Math.max(1, Math.floor((Date.now() - timerStartMs) / 1000));
+      const mins = Math.max(1, Math.round(totalSecs / 60));
+      document.getElementById('duracion').value = mins;
+
+      localStorage.removeItem('crisis_timer_start');
+      timerStartMs = null;
+      setTimerUIActive(false);
+
+      mostrarAlertaTimer(`Crisis detenida: ${mins} min calculados e insertados en el formulario.`);
+    }
+  }
+
+  function cancelarTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    localStorage.removeItem('crisis_timer_start');
+    timerStartMs = null;
+    setTimerUIActive(false);
+  }
+
+  function mostrarAlertaTimer(msg) {
+    const alert = document.getElementById('timerAlert');
+    document.getElementById('timerAlertText').innerText = '✓ ' + msg;
+    alert.style.display = 'flex';
+  }
+
+  function cerrarAlertaTimer() {
+    document.getElementById('timerAlert').style.display = 'none';
+  }
+
+  /* 6. Navegación por pestañas */
+  function cambiarVista(vista) {
+    const vistaReg = document.getElementById('vistaRegistro');
+    const vistaAna = document.getElementById('vistaAnalisis');
+    const btnReg = document.getElementById('tabRegistroBtn');
+    const btnAna = document.getElementById('tabAnalisisBtn');
+
+    if (vista === 'registro') {
+      vistaReg.style.display = 'flex';
+      vistaAna.style.display = 'none';
+      btnReg.classList.add('active');
+      btnAna.classList.remove('active');
+      renderRegistros();
+    } else {
+      vistaReg.style.display = 'none';
+      vistaAna.style.display = 'flex';
+      btnAna.classList.add('active');
+      btnReg.classList.remove('active');
+      renderAnalisis();
+    }
+  }
+
+  /* Renderizado de historial reciente */
+  function renderRegistros() {
+    const list = document.getElementById('listaRegistros');
+    const logs = getRegistros();
+    document.getElementById('contador').innerText = `${logs.length} eventos`;
+    list.innerHTML = '';
+
+    if (logs.length === 0) {
+      list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">No hay registros cargados aún.</p>';
+      return;
+    }
+
+    logs.forEach((reg, index) => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const fechaFormatted = new Date(reg.fechaHora).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+      
+      let html = `
+        <div class="item-header">
+          <span>${fechaFormatted} • ${reg.duracion} min</span>
+          <button class="btn-danger" onclick="eliminarRegistro(${index})">Borrar</button>
+        </div>
+        <div class="item-title">Chispa: ${escapeHtml(reg.chispa)}</div>
+      `;
+
+      if (reg.lugar || reg.carga) {
+        html += `<div style="font-size:0.825rem; color:var(--muted);">`;
+        if (reg.lugar) html += `<b>Lugar:</b> ${escapeHtml(reg.lugar)}${reg.carga ? ' | ' : ''}`;
+        if (reg.carga) html += `<b>Carga previa:</b> ${escapeHtml(reg.carga)}`;
+        html += `</div>`;
+      }
+
+      if (reg.conducta) {
+        html += `<div style="font-size:0.8rem; color:var(--text); opacity:0.9;"><b>Conducta:</b> ${escapeHtml(reg.conducta)}</div>`;
+      }
+
+      if (reg.ayudo) {
+        html += `<div style="font-size:0.8rem; color:var(--success);"><b>Ayudó:</b> ${escapeHtml(reg.ayudo)}</div>`;
+      }
+      if (reg.empeoro) {
+        html += `<div style="font-size:0.8rem; color:var(--danger);"><b>Empeoró:</b> ${escapeHtml(reg.empeoro)}</div>`;
+      }
+
+      item.innerHTML = html;
+      list.appendChild(item);
+    });
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  /* 6. Dashboard de análisis */
+  function renderAnalisis() {
+    const logs = getRegistros();
+    const total = logs.length;
+    document.getElementById('statTotal').innerText = total;
+
+    if (total === 0) {
+      document.getElementById('statPromedio').innerText = '0 m';
+      document.getElementById('statPico').innerText = '--';
+      document.getElementById('chartHoras').innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Sin datos suficientes.</p>';
+      document.getElementById('chartDias').innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Sin datos suficientes.</p>';
+      return;
+    }
+
+    const duracionProm = Math.round(logs.reduce((acc, cur) => acc + Number(cur.duracion || 0), 0) / total);
+    document.getElementById('statPromedio').innerText = `${duracionProm} m`;
+
+    const horasCount = Array(24).fill(0);
+    const diasCount = Array(7).fill(0);
+
+    logs.forEach(reg => {
+      const d = new Date(reg.fechaHora);
+      if (!isNaN(d.getTime())) {
+        horasCount[d.getHours()]++;
+        diasCount[d.getDay()]++;
+      }
+    });
+
+    const maxHora = Math.max(...horasCount);
+    const horaPicoIdx = horasCount.indexOf(maxHora);
+    document.getElementById('statPico').innerText = maxHora > 0 ? `${horaPicoIdx}:00` : '--';
+
+    const chartHoras = document.getElementById('chartHoras');
+    chartHoras.innerHTML = '';
+    
+    for (let h = 6; h <= 22; h += 2) {
+      const sum = horasCount[h] + (horasCount[h + 1] || 0);
+      const pct = maxHora > 0 ? (sum / (maxHora * 1.5)) * 100 : 0;
+      const isPeak = (h === horaPicoIdx || h + 1 === horaPicoIdx) && sum > 0;
+
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      row.innerHTML = `
+        <span class="bar-label">${h}:00</span>
+        <div class="bar-track">
+          <div class="bar-fill ${isPeak ? 'peak' : ''}" style="width: ${Math.min(pct, 100)}%;"></div>
+        </div>
+        <span class="bar-val">${sum}</span>
+      `;
+      chartHoras.appendChild(row);
+    }
+
+    const nombresDias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const maxDia = Math.max(...diasCount);
+    const chartDias = document.getElementById('chartDias');
+    chartDias.innerHTML = '';
+
+    nombresDias.forEach((dia, idx) => {
+      const count = diasCount[idx];
+      const pct = maxDia > 0 ? (count / maxDia) * 100 : 0;
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      row.innerHTML = `
+        <span class="bar-label">${dia}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: ${pct}%;"></div>
+        </div>
+        <span class="bar-val">${count}</span>
+      `;
+      chartDias.appendChild(row);
+    });
+  }
+
+  /* 4. Guardar registro y enriquecer catálogo de autocompletado */
+  function guardarRegistro(e) {
+    e.preventDefault();
+    const nuevo = {
+      fechaHora: document.getElementById('fechaHora').value,
+      duracion: document.getElementById('duracion').value,
+      chispa: document.getElementById('chispa').value,
+      lugar: document.getElementById('lugar').value,
+      carga: document.getElementById('carga').value,
+      conducta: document.getElementById('conducta').value,
+      ayudo: document.getElementById('ayudo').value,
+      empeoro: document.getElementById('empeoro').value
+    };
+
+    const logs = getRegistros();
+    logs.unshift(nuevo);
+    localStorage.setItem('meltdown_logs', JSON.stringify(logs));
+
+    // Guardar opciones en catálogo de sugerencias datalist
+    updateSuggestionsCatalog(nuevo);
+
+    document.getElementById('logForm').reset();
+    setFechaActual();
+    cerrarAlertaTimer();
+    renderRegistros();
+  }
+
+  /* 5. Eliminar individual */
+  function eliminarRegistro(index) {
+    let confirmed = false;
+    try {
+      confirmed = confirm('¿Eliminar este registro?');
+    } catch (e) {
+      confirmed = true;
+    }
+
+    if (confirmed) {
+      const logs = getRegistros();
+      logs.splice(index, 1);
+      localStorage.setItem('meltdown_logs', JSON.stringify(logs));
+      renderRegistros();
+    }
+  }
+
+  /* 5. Exportar CSV con UTF-8 BOM */
+  function exportarCSV() {
+    const logs = getRegistros();
+    if (logs.length === 0) {
+      alert('No hay datos para exportar.');
+      return;
+    }
+
+    const headers = ['Fecha y Hora', 'Duracion (min)', 'Detonante', 'Lugar', 'Carga Previa', 'Conducta', 'Que Ayudo', 'Que Empeoro'];
+    const rows = logs.map(r => [
+      `"${r.fechaHora}"`,
+      r.duracion,
+      `"${(r.chispa || '').replace(/"/g, '""')}"`,
+      `"${(r.lugar || '').replace(/"/g, '""')}"`,
+      `"${(r.carga || '').replace(/"/g, '""')}"`,
+      `"${(r.conducta || '').replace(/"/g, '""')}"`,
+      `"${(r.ayudo || '').replace(/"/g, '""')}"`,
+      `"${(r.empeoro || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `bitacora_regulacion_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // Inicialización
+  setFechaActual();
+  initTimer();
+  renderDatalists();
+  renderRegistros();
+</script>
+</body>
+</html>

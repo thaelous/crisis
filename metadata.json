@@ -1,0 +1,6 @@
+{
+  "name": "Bitácora Regulación",
+  "description": "Herramienta clínica y de registro de desregulación para padres de niños con TEA nivel 1 y TDAH.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

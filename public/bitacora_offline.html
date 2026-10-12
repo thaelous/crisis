@@ -9,9 +9,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Registro Crisis">
-  
-  <!-- 1. PWA Manifest Nativo (Data-URI) -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Registro%20de%20eventos%20y%20crisis%22%2C%22short_name%22%3A%22Registro%20Crisis%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%3E%3Crect%20width%3D'512'%20height%3D'512'%20rx%3D'100'%20fill%3D'%23090d16'%2F%3E%3Ccircle%20cx%3D'256'%20cy%3D'256'%20r%3D'160'%20fill%3D'%23131b2e'%20stroke%3D'%2338bdf8'%20stroke-width%3D'24'%2F%3E%3Cpath%20d%3D'M256%20160v96l64%2064'%20stroke%3D'%23f43f5e'%20stroke-width%3D'24'%20stroke-linecap%3D'round'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+  <!-- 1. PWA Manifest Nativo -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
 
   <style>
     :root {
@@ -1238,81 +1239,10 @@
 </div>
 
 <script>
-  // 1. Registro de Service Worker PWA nativo con estrategia Stale-While-Revalidate (SWR)
+  // 1. Registro de Service Worker limpio apuntando al archivo independiente /sw.js
   if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-    const swCode = `
-      const CACHE_NAME = 'registro-crisis-swr-v5';
-      const PRECACHE_ASSETS = ['./', './index.html', './bitacora_offline.html'];
-
-      self.addEventListener('install', (e) => {
-        e.waitUntil(
-          caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(PRECACHE_ASSETS).catch(() => {});
-          }).then(() => self.skipWaiting())
-        );
-      });
-
-      self.addEventListener('activate', (e) => {
-        e.waitUntil(
-          caches.keys().then((keys) => {
-            return Promise.all(
-              keys.map((key) => {
-                if (key !== CACHE_NAME) return caches.delete(key);
-              })
-            );
-          }).then(() => self.clients.claim())
-        );
-      });
-
-      self.addEventListener('fetch', (e) => {
-        if (e.request.method !== 'GET') return;
-        const url = new URL(e.request.url);
-        if (!url.protocol.startsWith('http')) return;
-
-        e.respondWith(
-          caches.open(CACHE_NAME).then(async (cache) => {
-            const cached = await cache.match(e.request);
-
-            const fetchPromise = fetch(e.request)
-              .then((networkResp) => {
-                if (networkResp && (networkResp.status === 200 || networkResp.type === 'opaque')) {
-                  cache.put(e.request, networkResp.clone()).catch(() => {});
-                }
-                return networkResp;
-              })
-              .catch(async () => {
-                if (e.request.mode === 'navigate') {
-                  return (await cache.match('./')) || (await cache.match('./index.html')) || (await cache.match('/'));
-                }
-                return null;
-              });
-
-            // SWR: Retornar inmediatamente de la caché si existe (0ms)
-            if (cached) return cached;
-
-            const networkResp = await fetchPromise;
-            if (networkResp) return networkResp;
-
-            if (e.request.mode === 'navigate') {
-              const fallback = (await cache.match('./')) || (await cache.match('./index.html')) || (await cache.match('/'));
-              if (fallback) return fallback;
-            }
-
-            return new Response('Contenido no disponible sin conexión', {
-              status: 503,
-              statusText: 'Service Unavailable',
-              headers: new Headers({ 'Content-Type': 'text/plain; charset=utf-8' })
-            });
-          })
-        );
-      });
-    `;
-
-    navigator.serviceWorker.register('/sw.js').catch(() => {
-      try {
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-      } catch {}
+    navigator.serviceWorker.register('/sw.js').catch(function (err) {
+      console.warn('[PWA] Error registro SW:', err);
     });
 
     window.addEventListener('offline', () => {

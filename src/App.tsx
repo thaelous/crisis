@@ -123,10 +123,6 @@ export default function App() {
   // Toast
   const [toast, setToast] = useState<ToastState | null>(null);
 
-  // PWA Install Prompt Banner
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallBanner, setShowInstallBanner] = useState<boolean>(false);
-
   const showToast = (message: string, type: 'success' | 'danger' | 'info' = 'info') => {
     setToast({ message, type });
   };
@@ -198,96 +194,16 @@ export default function App() {
     }
   };
 
-  // 2. Registro de Service Worker PWA nativo con estrategia Stale-While-Revalidate
+  // 2. Registro de Service Worker limpio y monitoreo de conectividad
   useEffect(() => {
     if (
       typeof window !== 'undefined' &&
       'serviceWorker' in navigator &&
       window.location.protocol.startsWith('http')
     ) {
-      const swCode = `
-        const CACHE_NAME = 'registro-crisis-swr-v5';
-        const PRECACHE_ASSETS = ['./', './index.html', './bitacora_offline.html'];
-
-        self.addEventListener('install', (e) => {
-          e.waitUntil(
-            caches.open(CACHE_NAME).then((cache) => {
-              return cache.addAll(PRECACHE_ASSETS).catch(() => {});
-            }).then(() => self.skipWaiting())
-          );
-        });
-
-        self.addEventListener('activate', (e) => {
-          e.waitUntil(
-            caches.keys().then((keys) => {
-              return Promise.all(
-                keys.map((key) => {
-                  if (key !== CACHE_NAME) return caches.delete(key);
-                })
-              );
-            }).then(() => self.clients.claim())
-          );
-        });
-
-        self.addEventListener('fetch', (e) => {
-          if (e.request.method !== 'GET') return;
-          const url = new URL(e.request.url);
-          if (!url.protocol.startsWith('http')) return;
-
-          e.respondWith(
-            caches.open(CACHE_NAME).then(async (cache) => {
-              const cached = await cache.match(e.request);
-
-              // Revalidar en segundo plano siempre
-              const fetchPromise = fetch(e.request)
-                .then((networkResp) => {
-                  if (networkResp && (networkResp.status === 200 || networkResp.type === 'opaque')) {
-                    cache.put(e.request, networkResp.clone()).catch(() => {});
-                  }
-                  return networkResp;
-                })
-                .catch(async () => {
-                  if (e.request.mode === 'navigate') {
-                    return (await cache.match('./')) || (await cache.match('./index.html')) || (await cache.match('/'));
-                  }
-                  return null;
-                });
-
-              // Stale-While-Revalidate: si está en caché, servir DE INMEDIATO (0ms latencia)
-              if (cached) return cached;
-
-              // Si es la primera visita, aguardar respuesta de red
-              const networkResp = await fetchPromise;
-              if (networkResp) return networkResp;
-
-              // Fallback para navegación offline
-              if (e.request.mode === 'navigate') {
-                const fallback = (await cache.match('./')) || (await cache.match('./index.html')) || (await cache.match('/'));
-                if (fallback) return fallback;
-              }
-
-              return new Response('Contenido no disponible sin conexión', {
-                status: 503,
-                statusText: 'Service Unavailable',
-                headers: new Headers({ 'Content-Type': 'text/plain; charset=utf-8' })
-              });
-            })
-          );
-        });
-      `;
-
-      // Intentar primero registrar archivo físico /sw.js, con fallback a Blob
-      navigator.serviceWorker
-        .register('/sw.js')
-        .catch(() => {
-          try {
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-            return navigator.serviceWorker.register(swUrl);
-          } catch {
-            // Ignore
-          }
-        });
+      navigator.serviceWorker.register('/sw.js').catch((err) => {
+        console.warn('[PWA] Registro SW:', err);
+      });
     }
 
     // Monitoreo de conectividad para avisar si la red se vuelve inestable
@@ -298,58 +214,14 @@ export default function App() {
       showToast('✓ Conexión a internet restablecida.', 'success');
     };
 
-    // Captura del evento beforeinstallprompt para banner nativo
-    const handleBeforeInstallPrompt = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      try {
-        const dismissed = sessionStorage.getItem('pwa_banner_dismissed');
-        if (!dismissed) {
-          setShowInstallBanner(true);
-        }
-      } catch {
-        setShowInstallBanner(true);
-      }
-    };
-
-    const handleAppInstalled = () => {
-      setShowInstallBanner(false);
-      setDeferredPrompt(null);
-      showToast('¡Aplicación agregada a la pantalla de inicio!', 'success');
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
-
     window.addEventListener('offline', handleOffline);
     window.addEventListener('online', handleOnline);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener('online', handleOnline);
     };
   }, []);
-
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    try {
-      deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      if (choice && choice.outcome === 'accepted') {
-        setShowInstallBanner(false);
-      }
-    } catch {}
-    setDeferredPrompt(null);
-  };
-
-  const handleDismissBanner = () => {
-    setShowInstallBanner(false);
-    try {
-      sessionStorage.setItem('pwa_banner_dismissed', 'true');
-    } catch {}
-  };
 
   // 3. Cargar datos locales al iniciar
   useEffect(() => {
@@ -1653,27 +1525,6 @@ export default function App() {
         )}
       </main>
 
-      {/* Banner flotante de instalación PWA en Android / Chrome */}
-      {showInstallBanner && (
-        <div className="install-banner">
-          <div className="install-banner-content">
-            <span className="install-banner-icon">📲</span>
-            <div className="install-banner-text">
-              <p className="install-banner-title">Instala esta aplicación</p>
-              <p className="install-banner-desc">Instala esta aplicación en tu pantalla de inicio para acceso inmediato y sin conexión.</p>
-            </div>
-          </div>
-          <div className="install-banner-actions">
-            <button type="button" className="btn-install-secondary" onClick={handleDismissBanner}>
-              Ahora no
-            </button>
-            <button type="button" className="btn-install-primary" onClick={handleInstallClick}>
-              Instalar ahora
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Barra de Navegación Inferior Fija (Bottom Nav Bar) */}
       <nav className="bottom-nav">
         <button
@@ -1701,37 +1552,6 @@ export default function App() {
           <span>Datos</span>
         </button>
       </nav>
-
-      {/* Banner Flotante de Instalación PWA en Android / Chrome */}
-      {showInstallBanner && (
-        <aside className="install-banner" role="alert">
-          <div className="install-banner-content">
-            <span className="install-banner-icon">📲</span>
-            <div className="install-banner-text">
-              <span className="install-banner-title">Acceso rápido</span>
-              <span className="install-banner-desc">
-                📲 Instala esta aplicación en tu pantalla de inicio para acceso inmediato y sin conexión.
-              </span>
-            </div>
-          </div>
-          <div className="install-banner-actions">
-            <button
-              type="button"
-              className="btn-install-secondary"
-              onClick={handleDismissBanner}
-            >
-              Ahora no
-            </button>
-            <button
-              type="button"
-              className="btn-install-primary"
-              onClick={handleInstallClick}
-            >
-              Instalar ahora
-            </button>
-          </div>
-        </aside>
-      )}
 
       {/* Toast Notification Flotante */}
       {toast && (

@@ -9,18 +9,182 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Registro Crisis" />
-    
-    <!-- PWA Manifest Data-URI -->
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Registro%20de%20eventos%20y%20crisis%22%2C%22short_name%22%3A%22Registro%20Crisis%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%3E%3Crect%20width%3D'512'%20height%3D'512'%20rx%3D'100'%20fill%3D'%23090d16'%2F%3E%3Ccircle%20cx%3D'256'%20cy%3D'256'%20r%3D'160'%20fill%3D'%23131b2e'%20stroke%3D'%2338bdf8'%20stroke-width%3D'24'%2F%3E%3Cpath%20d%3D'M256%20160v96l64%2064'%20stroke%3D'%23f43f5e'%20stroke-width%3D'24'%20stroke-linecap%3D'round'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D" />
 
+    <!-- Enlace a Web App Manifest independiente en la raíz -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Iconos PWA y Favicon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+
+    <!-- OpenGraph & Twitter Cards -->
     <meta property="og:title" content="Registro de eventos y crisis" />
     <meta property="og:description" content="Herramienta de registro de eventos y crisis, análisis de patrones y guía rápida de rescate." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+
+    <style>
+      /* Estilos para el banner flotante nativo de instalación PWA */
+      #installBanner {
+        display: none;
+        position: fixed;
+        bottom: 74px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 24px);
+        max-width: 480px;
+        background: #131b2e;
+        border: 1.5px solid #38bdf8;
+        border-radius: 14px;
+        padding: 14px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65);
+        z-index: 99999;
+        flex-direction: column;
+        gap: 12px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        box-sizing: border-box;
+        animation: installBannerFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes installBannerFadeIn {
+        from {
+          opacity: 0;
+          transform: translate(-50%, 16px);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, 0);
+        }
+      }
+
+      .install-banner-text {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        color: #f1f5f9;
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .install-banner-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        align-items: center;
+      }
+
+      .install-banner-btn-close {
+        background: rgba(255, 255, 255, 0.08);
+        color: #94a3b8;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        padding: 9px 14px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: all 0.15s ease;
+      }
+
+      .install-banner-btn-close:active {
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .install-banner-btn-primary {
+        background: #38bdf8;
+        color: #090d16;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 16px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: all 0.15s ease;
+      }
+
+      .install-banner-btn-primary:active {
+        background: #0284c7;
+        color: #ffffff;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Tarjeta flotante de instalación visible en Android / Chrome (#installBanner) -->
+    <div id="installBanner" role="dialog" aria-modal="false" aria-label="Instalar aplicación">
+      <p class="install-banner-text">📲 Instala esta app en tu celular para usarla sin conexión y con un solo toque.</p>
+      <div class="install-banner-actions">
+        <button id="btnDismissInstallBanner" class="install-banner-btn-close" type="button">Cerrar / Ahora no</button>
+        <button id="btnTriggerInstallPrompt" class="install-banner-btn-primary" type="button">Instalar ahora</button>
+      </div>
+    </div>
+
+    <!-- Script de registro de Service Worker y captura del prompt de instalación -->
+    <script>
+      // 1. Registro de Service Worker independiente en /sw.js
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then(function (registration) {
+              console.log('[PWA] Service Worker registrado correctamente:', registration.scope);
+            })
+            .catch(function (error) {
+              console.warn('[PWA] Error en registro de Service Worker:', error);
+            });
+        });
+      }
+
+      // 2. Escucha del evento beforeinstallprompt y control del banner
+      let deferredPrompt = null;
+      var installBannerEl = document.getElementById('installBanner');
+      var btnInstallEl = document.getElementById('btnTriggerInstallPrompt');
+      var btnDismissEl = document.getElementById('btnDismissInstallBanner');
+
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBannerEl && !sessionStorage.getItem('pwa_banner_dismissed')) {
+          installBannerEl.style.display = 'flex';
+        }
+      });
+
+      if (btnInstallEl) {
+        btnInstallEl.addEventListener('click', function () {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function () {
+              deferredPrompt = null;
+              if (installBannerEl) {
+                installBannerEl.style.display = 'none';
+              }
+            });
+          }
+        });
+      }
+
+      if (btnDismissEl) {
+        btnDismissEl.addEventListener('click', function () {
+          if (installBannerEl) {
+            installBannerEl.style.display = 'none';
+          }
+          try {
+            sessionStorage.setItem('pwa_banner_dismissed', 'true');
+          } catch (err) {}
+        });
+      }
+
+      // 3. Ocultar banner permanentemente al completarse la instalación
+      window.addEventListener('appinstalled', function () {
+        deferredPrompt = null;
+        if (installBannerEl) {
+          installBannerEl.style.display = 'none';
+        }
+        console.log('[PWA] Aplicación instalada exitosamente en el dispositivo');
+      });
+    </script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

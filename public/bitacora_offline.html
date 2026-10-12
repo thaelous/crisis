@@ -3,344 +3,328 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Bitácora Regulación</title>
-  <meta name="description" content="Herramienta clínica y de registro de desregulación para padres de niños con TEA nivel 1 y TDAH.">
-  <meta name="theme-color" content="#0f172a">
+  <title>Registro de eventos y crisis</title>
+  <meta name="description" content="Herramienta de registro de eventos y crisis, análisis de patrones y guía rápida de rescate.">
+  <meta name="theme-color" content="#090d16">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Bitácora Regulación">
+  <meta name="apple-mobile-web-app-title" content="Registro Crisis">
   
-  <!-- 1. PWA Manifest Nativo Data-URI -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Bit%C3%A1cora%20Regulaci%C3%B3n%22%2C%22short_name%22%3A%22Regulaci%C3%B3n%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%3E%3Crect%20width%3D'512'%20height%3D'512'%20rx%3D'100'%20fill%3D'%230f172a'%2F%3E%3Ccircle%20cx%3D'256'%20cy%3D'256'%20r%3D'160'%20fill%3D'%231e293b'%20stroke%3D'%2338bdf8'%20stroke-width%3D'24'%2F%3E%3Cpath%20d%3D'M256%20160v96l64%2064'%20stroke%3D'%23f43f5e'%20stroke-width%3D'24'%20stroke-linecap%3D'round'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+  <!-- 1. PWA Manifest Nativo (Data-URI) -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Registro%20de%20eventos%20y%20crisis%22%2C%22short_name%22%3A%22Registro%20Crisis%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%3E%3Crect%20width%3D'512'%20height%3D'512'%20rx%3D'100'%20fill%3D'%23090d16'%2F%3E%3Ccircle%20cx%3D'256'%20cy%3D'256'%20r%3D'160'%20fill%3D'%23131b2e'%20stroke%3D'%2338bdf8'%20stroke-width%3D'24'%2F%3E%3Cpath%20d%3D'M256%20160v96l64%2064'%20stroke%3D'%23f43f5e'%20stroke-width%3D'24'%20stroke-linecap%3D'round'%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
 
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
+      --bg: #090d16;
+      --card: #131b2e;
+      --card-subtle: #1e293b;
       --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
       --accent-peak: #f43f5e;
       --text: #f1f5f9;
       --muted: #94a3b8;
-      --border: #334155;
+      --border: #243048;
+      --border-light: #334155;
+      --input-bg: #090d16;
       --danger: #f43f5e;
       --success: #10b981;
+      --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
     }
-    * { 
-      box-sizing: border-box; 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-      margin: 0; 
-      padding: 0; 
-      -webkit-tap-highlight-color: transparent; 
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --card-subtle: #f1f5f9;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --accent-peak: #e11d48;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --border-light: #cbd5e1;
+      --input-bg: #ffffff;
+      --danger: #e11d48;
+      --success: #059669;
+      --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+      --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.04);
     }
-    body { 
-      background-color: var(--bg); 
-      color: var(--text); 
-      padding: 14px; 
-      display: flex; 
-      justify-content: center; 
-      min-height: 100vh; 
-    }
-    .container { 
-      width: 100%; 
-      max-width: 580px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 14px; 
-    }
-    
-    header { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-    }
-    h1 { 
-      font-size: 1.25rem; 
-      font-weight: 700; 
-      color: var(--accent); 
-    }
-    .subtitle { 
-      font-size: 0.75rem; 
-      color: var(--muted); 
-      margin-top: 2px; 
-    }
-    
-    /* Cronómetro Superior */
-    .timer-box {
-      background: linear-gradient(180deg, #1e293b 0%, #152136 100%);
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    }
-    .timer-box.active {
-      border-color: var(--accent-peak);
-      box-shadow: 0 0 16px rgba(244, 63, 94, 0.25);
-    }
-    .timer-btn {
-      width: 100%;
-      padding: 14px 16px;
-      min-height: 52px;
-      font-size: 1.05rem;
-      font-weight: 700;
-      border-radius: 10px;
-      cursor: pointer;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      touch-action: manipulation;
-    }
-    .timer-btn-start { 
-      background: var(--accent); 
-      color: #0f172a; 
-    }
-    .timer-btn-start:active { 
-      opacity: 0.85; 
-      transform: scale(0.98); 
-    }
-    .timer-btn-stop {
-      background: var(--accent-peak);
-      color: #ffffff;
-      animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    .timer-btn-stop:active { 
-      opacity: 0.9; 
-      transform: scale(0.98); 
-    }
-    @keyframes pulse-ring {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.5); }
-      50% { box-shadow: 0 0 0 8px rgba(244, 63, 94, 0); }
-    }
-    .timer-time-display {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 1.85rem;
-      font-weight: 700;
-      color: var(--accent-peak);
-      text-align: center;
-      letter-spacing: 0.05em;
-    }
-    .timer-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 3px 8px;
-      border-radius: 9999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .timer-badge.running {
-      background: rgba(244, 63, 94, 0.15);
-      color: var(--accent-peak);
-      border: 1px solid rgba(244, 63, 94, 0.3);
-    }
-    .timer-alert {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid var(--success);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px 12px; display: flex; justify-content: center; min-height: 100vh; transition: background-color 0.25s ease, color 0.25s ease; line-height: 1.5; }
+    .container { width: 100%; max-width: 580px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* Header */
+    .app-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 4px 2px; }
+    .brand-wrap { display: flex; flex-direction: column; }
+    h1 { font-size: 1.28rem; font-weight: 800; color: var(--accent); letter-spacing: -0.02em; line-height: 1.2; }
+    .child-badge { font-size: 0.78rem; font-weight: 600; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+    .child-pill { background: var(--card-subtle); border: 1px solid var(--border); padding: 1px 8px; border-radius: 9999px; color: var(--accent); font-size: 0.75rem; }
+    .header-actions { display: flex; align-items: center; gap: 6px; }
+
+    /* Modales */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; backdrop-filter: blur(6px); }
+    .modal-card { background-color: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 16px; animation: modal-enter 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes modal-enter { from { transform: scale(0.96) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    .modal-title { font-size: 1.18rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .rescue-step { background: var(--card-subtle); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 8px; font-size: 0.92rem; line-height: 1.45; color: var(--text); }
+    .rescue-step.critical { border-left-color: var(--accent-peak); }
+
+    /* Cronómetro */
+    .timer-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow); transition: all 0.25s ease; }
+    .timer-box.active { border-color: var(--accent-peak); box-shadow: 0 0 24px rgba(244, 63, 94, 0.28); }
+    .timer-btn { width: 100%; padding: 15px 18px; min-height: 52px; font-size: 1.05rem; font-weight: 700; border-radius: 12px; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); touch-action: manipulation; }
+    .timer-btn-start { background: var(--accent); color: #0f172a; box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35); }
+    .timer-btn-start:hover { background: var(--accent-hover); }
+    .timer-btn-start:active { transform: scale(0.98); }
+    .timer-btn-stop { background: var(--accent-peak); color: #ffffff; animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .timer-btn-stop:active { transform: scale(0.98); }
+    @keyframes pulse-ring { 0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.55); } 50% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0); } }
+    .timer-time-display { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 2.1rem; font-weight: 800; color: var(--accent-peak); text-align: center; }
+    .timer-badge { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px; }
+    .timer-badge.running { background: rgba(244, 63, 94, 0.15); color: var(--accent-peak); border: 1px solid rgba(244, 63, 94, 0.3); }
+    .timer-alert { background: rgba(16, 185, 129, 0.12); border: 1px solid var(--success); color: var(--text); padding: 11px 14px; border-radius: 10px; font-size: 0.86rem; display: flex; justify-content: space-between; align-items: center; }
 
     /* Pestañas */
-    .tabs { 
-      display: flex; 
-      gap: 8px; 
-      border-bottom: 1px solid var(--border); 
-      padding-bottom: 8px; 
-    }
-    .tab-btn {
-      background: transparent; 
-      border: none; 
-      color: var(--muted); 
-      font-size: 0.95rem;
-      font-weight: 600; 
-      padding: 8px 14px; 
-      cursor: pointer; 
-      border-radius: 8px;
-      transition: all 0.15s ease;
-    }
-    .tab-btn.active { 
-      background: var(--card); 
-      color: var(--accent); 
-    }
+    .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--card-subtle); padding: 5px; border-radius: 12px; border: 1px solid var(--border); }
+    .tab-btn { background: transparent; border: none; color: var(--muted); font-size: 0.88rem; font-weight: 600; padding: 10px 8px; cursor: pointer; border-radius: 8px; transition: all 0.2s ease; text-align: center; }
+    .tab-btn.active { background: var(--card); color: var(--accent); box-shadow: var(--shadow-sm); }
 
-    .card {
-      background-color: var(--card); 
-      border: 1px solid var(--border); 
-      border-radius: 12px;
-      padding: 16px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 12px;
-    }
-    label { 
-      font-size: 0.8rem; 
-      font-weight: 600; 
-      color: var(--muted); 
-      text-transform: uppercase; 
-      letter-spacing: 0.05em; 
-    }
-    input, textarea {
-      width: 100%; 
-      background: #0f172a; 
-      border: 1px solid var(--border); 
-      border-radius: 8px;
-      color: var(--text); 
-      padding: 11px; 
-      font-size: 0.95rem; 
-      outline: none; 
-      margin-top: 4px;
-    }
-    input:focus, textarea:focus { border-color: var(--accent); }
-    textarea { resize: vertical; min-height: 60px; }
+    /* Barra de Filtros */
+    .filter-bar { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow-sm); }
+    .filter-pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+    .filter-pill { background: var(--card-subtle); border: 1px solid var(--border); color: var(--muted); font-size: 0.78rem; font-weight: 600; padding: 6px 12px; border-radius: 9999px; cursor: pointer; white-space: nowrap; transition: all 0.15s ease; }
+    .filter-pill.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+    .custom-range-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+
+    /* Tarjetas y Controles */
+    .card { background-color: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow-sm); }
+    label { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    input, textarea, select { width: 100%; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: 12px 14px; font-size: 0.95rem; outline: none; margin-top: 4px; transition: border-color 0.15s ease; }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 65px; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    
-    .btn {
-      background: var(--accent); 
-      color: #0f172a; 
-      border: none; 
-      font-weight: 700; 
-      font-size: 1rem;
-      padding: 14px; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      text-align: center; 
-      min-height: 48px;
-      transition: opacity 0.15s;
-    }
-    .btn:active { opacity: 0.85; }
-    .btn-secondary {
-      background: transparent; 
-      border: 1px solid var(--border); 
-      color: var(--text);
-      font-size: 0.8rem; 
-      padding: 7px 12px; 
-      border-radius: 6px; 
-      cursor: pointer; 
-      min-height: 36px;
-    }
-    .btn-danger {
-      background: transparent; 
-      border: 1px solid var(--danger); 
-      color: var(--danger);
-      font-size: 0.75rem; 
-      padding: 5px 10px; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      min-height: 32px;
-    }
+
+    /* Botones */
+    .btn { background: var(--accent); color: #0f172a; border: none; font-weight: 700; font-size: 1rem; padding: 14px; border-radius: 10px; cursor: pointer; text-align: center; min-height: 48px; transition: all 0.15s ease; box-shadow: 0 2px 10px rgba(56, 189, 248, 0.25); }
+    .btn:active { transform: scale(0.98); opacity: 0.9; }
+    .btn-secondary { background: var(--card-subtle); border: 1px solid var(--border); color: var(--text); font-size: 0.84rem; font-weight: 600; padding: 8px 14px; border-radius: 10px; cursor: pointer; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-icon { background: var(--card-subtle); border: 1px solid var(--border); color: var(--text); font-size: 1.05rem; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-rescue { background: rgba(244, 63, 94, 0.12); border: 1px solid var(--accent-peak); color: var(--accent-peak); font-size: 0.84rem; font-weight: 700; padding: 8px 12px; border-radius: 10px; cursor: pointer; min-height: 40px; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 6px; cursor: pointer; min-height: 30px; }
 
     /* Historial */
-    .item { 
-      border-left: 3px solid var(--accent); 
-      padding-left: 12px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 4px; 
+    .item { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--shadow-sm); }
+    .item-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--muted); }
+    .item-title { font-weight: 700; color: var(--text); font-size: 0.98rem; }
+    .med-badge { background: rgba(56, 189, 248, 0.12); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.76rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
+
+    /* Alerta de proximidad con medicación programada */
+    .med-alert-box {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1.5px solid var(--accent);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--text);
+      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.12);
     }
-    .item-header { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      font-size: 0.85rem; 
-      color: var(--muted); 
-    }
-    .item-title { 
-      font-weight: 600; 
-      color: var(--text); 
-      font-size: 0.95rem; 
+    [data-theme="light"] .med-alert-box {
+      background: rgba(2, 132, 199, 0.08);
+      border-color: var(--accent);
     }
 
     /* Gráficos de barras nativos */
-    .bar-chart { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
-    .bar-row { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; }
-    .bar-label { width: 55px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
-    .bar-track { flex: 1; background: #0f172a; height: 16px; border-radius: 4px; overflow: hidden; display: flex; }
-    .bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; }
+    .bar-chart { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; }
+    .bar-label { width: 55px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+    .bar-track { flex: 1; background: var(--input-bg); height: 18px; border-radius: 6px; overflow: hidden; display: flex; border: 1px solid var(--border); }
+    .bar-fill { height: 100%; background: var(--accent); border-radius: 6px; transition: width 0.35s ease-out; }
     .bar-fill.peak { background: var(--accent-peak); }
-    .bar-val { width: 24px; color: var(--text); font-weight: 600; }
+    .bar-val { width: 24px; color: var(--text); font-weight: 700; }
 
-    /* Métricas */
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
-    .stat-box { background: #0f172a; padding: 12px 6px; border-radius: 8px; border: 1px solid var(--border); }
-    .stat-num { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
-    .stat-desc { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+    /* Métricas Dashboard */
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    @media (min-width: 480px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+    .stat-box { background: var(--card); padding: 14px 10px; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .stat-num { font-size: 1.35rem; font-weight: 800; color: var(--accent); }
+    .stat-desc { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-top: 3px; }
+
+    /* Top Triggers */
+    .top-trigger-item { display: flex; justify-content: space-between; align-items: center; background: var(--card-subtle); padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; border: 1px solid var(--border); }
+
+    /* Pestaña de Datos */
+    .action-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; box-shadow: var(--shadow-sm); }
+    .action-card-text { display: flex; flex-direction: column; gap: 2px; }
+    .action-card-title { font-weight: 700; font-size: 0.95rem; color: var(--text); }
+    .action-card-desc { font-size: 0.8rem; color: var(--muted); }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Datalists para sugerencias inteligentes previas -->
+  <!-- Datalists para sugerencias previas -->
   <datalist id="dl-chispa"></datalist>
   <datalist id="dl-lugar"></datalist>
   <datalist id="dl-carga"></datalist>
   <datalist id="dl-ayudo"></datalist>
   <datalist id="dl-empeoro"></datalist>
 
-  <header>
-    <div>
-      <h1>Bitácora de Regulación</h1>
-      <div class="subtitle">Herramienta clínica TEA Nivel 1 & TDAH</div>
+  <input type="file" id="fileImport" accept=".json" style="display:none;" onchange="importarJSON(event)">
+
+  <!-- Modal Guía Rápida de Rescate -->
+  <div class="modal-overlay" id="rescueModal" style="display:none;" onclick="cerrarModal('rescueModal')">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title"><span>🧰</span> Guía rápida de rescate</div>
+        <button type="button" onclick="cerrarModal('rescueModal')" style="background:transparent; border:none; color:var(--text); font-size:1.4rem; cursor:pointer; line-height:1;">×</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="rescue-step"><b>1. Reduce estímulos:</b> apaga ruidos, baja luces, retira objetos cercanos.</div>
+        <div class="rescue-step"><b>2. Postura y tono neutro:</b> habla con voz suave, pocas palabras y sin exigir explicaciones.</div>
+        <div class="rescue-step"><b>3. Espacio seguro y contención:</b> ofrece presión profunda o cobija si lo tolera; no toques si lo irrita.</div>
+        <div class="rescue-step critical"><b>4. No intentes razonar</b> ni poner consecuencias en este momento.</div>
+      </div>
+      <button type="button" class="btn" style="margin-top:6px;" onclick="cerrarModal('rescueModal')">Entendido / Cerrar</button>
     </div>
-    <button class="btn-secondary" onclick="exportarCSV()">Exportar CSV</button>
-  </header>
-
-  <!-- 3. CRONÓMETRO DE CRISIS (Acceso rápido superior) -->
-  <section class="timer-box" id="timerContainer">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <label style="margin:0;">Cronómetro de Crisis</label>
-      <span class="timer-badge" id="timerBadge" style="display:none;">
-        <span style="width:8px; height:8px; border-radius:50%; background:var(--accent-peak); display:inline-block;"></span>
-        En curso
-      </span>
-      <span id="timerHint" style="font-size:0.75rem; color:var(--muted);">Acceso táctil rápido</span>
-    </div>
-
-    <div id="timerDisplayWrap" style="display:none; flex-direction:column; align-items:center; gap:4px;">
-      <div class="timer-time-display" id="timerDisplay">00:00</div>
-      <div id="timerStartInfo" style="font-size:0.8rem; color:var(--muted);"></div>
-    </div>
-
-    <button type="button" class="timer-btn timer-btn-start" id="btnTimer" onclick="toggleTimer()">
-      ⏱ Iniciar Crisis
-    </button>
-
-    <div id="timerCancelWrap" style="display:none; justify-content:center;">
-      <button type="button" onclick="cancelarTimer()" style="background:transparent; border:none; color:var(--muted); font-size:0.75rem; text-decoration:underline; cursor:pointer; padding:4px;">
-        Cancelar cronómetro sin calcular
-      </button>
-    </div>
-
-    <div class="timer-alert" id="timerAlert" style="display:none;">
-      <span id="timerAlertText"></span>
-      <button type="button" onclick="cerrarAlertaTimer()" style="background:transparent; border:none; color:var(--text); cursor:pointer; font-size:1rem; line-height:1;">×</button>
-    </div>
-  </section>
-
-  <!-- PESTAÑAS -->
-  <div class="tabs">
-    <button class="tab-btn active" id="tabRegistroBtn" onclick="cambiarVista('registro')">Registro</button>
-    <button class="tab-btn" id="tabAnalisisBtn" onclick="cambiarVista('analisis')">Análisis y Gráficas</button>
   </div>
 
-  <!-- 4. SECCIÓN: REGISTRO RÁPIDO -->
-  <div id="vistaRegistro" style="display:flex; flex-direction:column; gap:14px;">
+  <!-- Modal Tutorial -->
+  <div class="modal-overlay" id="tutorialModal" style="display:none;" onclick="cerrarModal('tutorialModal')">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title"><span>📘</span> ¿Cómo funciona esta app?</div>
+        <button type="button" onclick="cerrarModal('tutorialModal')" style="background:transparent; border:none; color:var(--text); font-size:1.4rem; cursor:pointer; line-height:1;">×</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; font-size:0.88rem;">
+        <div class="rescue-step"><b>1. Privacidad Total:</b> Tus registros se guardan única y exclusivamente en este teléfono. No viajan a ningún servidor externo.</div>
+        <div class="rescue-step"><b>2. Exportar CSV:</b> Genera una tabla limpia compatible con Excel para compartir con el médico tratante.</div>
+        <div class="rescue-step"><b>3. Copia de Seguridad JSON:</b> Descarga un archivo completo con todos tus eventos, perfil y catálogo de sugerencias.</div>
+        <div class="rescue-step"><b>4. Restaurar JSON:</b> Si cambias de teléfono o borras datos, selecciona tu archivo JSON y recupera todo al instante.</div>
+      </div>
+      <button type="button" class="btn" style="margin-top:6px;" onclick="cerrarModal('tutorialModal')">Cerrar Guía</button>
+    </div>
+  </div>
+
+  <!-- Modal Ajustes / Perfil -->
+  <div class="modal-overlay" id="profileModal" style="display:none;" onclick="cerrarModal('profileModal')">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title"><span>⚙️</span> Ajustes y Perfil</div>
+        <button type="button" onclick="cerrarModal('profileModal')" style="background:transparent; border:none; color:var(--text); font-size:1.4rem; cursor:pointer; line-height:1;">×</button>
+      </div>
+      <form onsubmit="guardarPerfil(event)" style="display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <label for="childName">Nombre del niño</label>
+          <input type="text" id="childName" placeholder="ej. Mateo">
+        </div>
+        <div class="grid">
+          <div>
+            <label for="birthDateOrAge">Edad / Fecha</label>
+            <input type="text" id="birthDateOrAge" placeholder="ej. 8 años">
+          </div>
+          <div>
+            <label for="diagnosisNotes">Diagnóstico / Notas</label>
+            <input type="text" id="diagnosisNotes" placeholder="ej. Sensibilidad auditiva">
+          </div>
+        </div>
+
+        <div style="border-top:1px solid var(--border); paddingTop:12px;">
+          <label style="display:block; margin-bottom:8px;">💊 Programador de Medicación (Horario semanal)</label>
+          <div style="background:var(--card-subtle); padding:12px; border-radius:12px; display:flex; flex-direction:column; gap:10px;">
+            <div class="grid">
+              <div>
+                <label for="medName" style="font-size:0.72rem;">Medicamento</label>
+                <input type="text" id="medName" placeholder="ej. Metilfenidato 10mg">
+              </div>
+              <div>
+                <label for="medTime" style="font-size:0.72rem;">Hora programada</label>
+                <input type="time" id="medTime" value="08:00">
+              </div>
+            </div>
+            <div>
+              <label style="font-size:0.72rem;">Días de toma:</label>
+              <div id="daysPillsContainer" style="display:flex; gap:4px; flex-wrap:wrap; margin-top:4px;"></div>
+            </div>
+            <button type="button" class="btn-secondary" style="align-self:flex-start;" onclick="agregarMedicamento()">+ Agregar toma</button>
+          </div>
+          <div id="medListContainer" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;"></div>
+        </div>
+
+        <button type="submit" class="btn" style="margin-top:6px;">Guardar Cambios</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Cabecera -->
+  <header class="app-header">
+    <div class="brand-wrap">
+      <h1>Registro de eventos y crisis</h1>
+      <div id="childBadgeHeader" class="child-badge" style="display:none;">
+        <span class="child-pill" id="childPillText"></span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-rescue" onclick="abrirModal('rescueModal')" title="Guía rápida de rescate">
+        <span>🧰</span><span>Guía</span>
+      </button>
+      <button type="button" class="btn-icon" onclick="abrirModal('profileModal')" title="Ajustes y Perfil">⚙️</button>
+      <button type="button" class="btn-icon" id="themeToggleBtn" onclick="toggleTheme()" title="Cambiar tema">☀️</button>
+    </div>
+  </header>
+
+  <!-- Pestañas -->
+  <nav class="tabs">
+    <button type="button" class="tab-btn active" id="tabBtnRegistro" onclick="cambiarVista('registro')">Registro</button>
+    <button type="button" class="tab-btn" id="tabBtnAnalisis" onclick="cambiarVista('analisis')">Análisis y Gráficas</button>
+    <button type="button" class="tab-btn" id="tabBtnDatos" onclick="cambiarVista('datos')">Datos</button>
+  </nav>
+
+  <!-- SECCIÓN 1: REGISTRO -->
+  <div id="vistaRegistro" style="display:flex; flex-direction:column; gap:16px;">
+    <!-- Cronómetro -->
+    <section class="timer-box" id="timerContainer">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label style="margin:0;">Cronómetro de Crisis</label>
+        <span class="timer-badge" id="timerBadge" style="display:none;">
+          <span style="width:8px; height:8px; border-radius:50%; background:var(--accent-peak); display:inline-block;"></span>
+          En curso
+        </span>
+        <span id="timerHint" style="font-size:0.75rem; color:var(--muted);">Acceso táctil rápido</span>
+      </div>
+
+      <div id="timerDisplayWrap" style="display:none; flex-direction:column; align-items:center; gap:4px;">
+        <div class="timer-time-display" id="timerDisplay">00:00</div>
+        <div id="timerStartInfo" style="font-size:0.8rem; color:var(--muted);"></div>
+      </div>
+
+      <button type="button" class="timer-btn timer-btn-start" id="btnTimer" onclick="toggleTimer()">
+        ⏱ Iniciar Registro
+      </button>
+
+      <div id="timerCancelWrap" style="display:none; justify-content:center;">
+        <button type="button" onclick="cancelarTimer()" style="background:transparent; border:none; color:var(--muted); font-size:0.75rem; text-decoration:underline; cursor:pointer; padding:4px;">
+          Cancelar cronómetro sin calcular
+        </button>
+      </div>
+
+      <div class="timer-alert" id="timerAlert" style="display:none;">
+        <span id="timerAlertText"></span>
+        <button type="button" onclick="cerrarAlertaTimer()" style="background:transparent; border:none; color:var(--text); cursor:pointer; font-size:1rem; line-height:1;">×</button>
+      </div>
+    </section>
+
+    <!-- Formulario -->
     <form id="logForm" class="card" onsubmit="guardarRegistro(event)">
       <div class="grid">
         <div>
           <label for="fechaHora">Fecha y Hora</label>
-          <input type="datetime-local" id="fechaHora" required>
+          <input type="datetime-local" id="fechaHora" oninput="verificarProximidadMedicacion()" required>
         </div>
         <div>
           <label for="duracion">Duración (min)</label>
@@ -348,8 +332,27 @@
         </div>
       </div>
 
+      <!-- Alerta de coincidencia con medicación programada -->
+      <div id="medAlertBox" style="display:none;" class="med-alert-box">
+        <div style="display:flex; align-items:flex-start; gap:10px;">
+          <span style="fontSize:1.25rem; line-height:1;">💊</span>
+          <div>
+            <div style="font-weight:700; font-size:0.86rem; color:var(--accent);">Toma de medicación cercana detectada</div>
+            <div id="medAlertText" style="font-size:0.82rem; margin-top:2px; color:var(--text);"></div>
+          </div>
+        </div>
+        <button type="button" id="btnVincularMed" class="btn-secondary" style="font-size:0.76rem; padding:6px 10px; min-height:32px; white-space:nowrap;">Vincular toma</button>
+      </div>
+
       <div>
-        <label for="chispa">Detonante visible inmediato ("Chispa")</label>
+        <label for="medRelated">Toma de medicación relacionada</label>
+        <select id="medRelated">
+          <option value="">Ninguna / No relacionada</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="chispa">Detonante visible / Chispa</label>
         <input type="text" id="chispa" list="dl-chispa" placeholder="ej. Transición abrupta / apagar pantalla" autocomplete="off" required>
       </div>
 
@@ -359,7 +362,7 @@
           <input type="text" id="lugar" list="dl-lugar" placeholder="ej. Escuela, sala, auto" autocomplete="off">
         </div>
         <div>
-          <label for="carga">Carga previa (HALT / Basal)</label>
+          <label for="carga">Carga previa / HALT</label>
           <input type="text" id="carga" list="dl-carga" placeholder="ej. Sueño deficiente, hambre, sobrecarga" autocomplete="off">
         </div>
       </div>
@@ -371,71 +374,151 @@
 
       <div class="grid">
         <div>
-          <label for="ayudo">Qué ayudó a regularlo</label>
+          <label for="ayudo">Qué ayudó</label>
           <input type="text" id="ayudo" list="dl-ayudo" placeholder="ej. Silencio, cuarto oscuro, cobija pesada" autocomplete="off">
         </div>
         <div>
-          <label for="empeoro">Qué lo empeoró</label>
+          <label for="empeoro">Qué empeoró</label>
           <input type="text" id="empeoro" list="dl-empeoro" placeholder="ej. Querer razonar con él, insistir verbalmente" autocomplete="off">
         </div>
       </div>
 
-      <button type="submit" class="btn">Guardar Episodio</button>
+      <button type="submit" class="btn">Guardar Evento</button>
     </form>
 
-    <div class="card">
+    <!-- Filtro de Fechas para Historial -->
+    <div class="filter-bar">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <label>Historial reciente</label>
-        <span id="contador" style="font-size:0.8rem; color:var(--muted);">0 eventos</span>
+        <label style="margin:0;">Filtrar historial por fecha</label>
+        <span id="filterCountHist" style="font-size:0.78rem; color:var(--muted);">0 eventos</span>
       </div>
-      <div id="listaRegistros" style="display:flex; flex-direction:column; gap:14px;"></div>
+      <div class="filter-pills" id="filterPillsHist">
+        <button type="button" class="filter-pill active" onclick="setFiltro('all')">Todos</button>
+        <button type="button" class="filter-pill" onclick="setFiltro('7d')">Últimos 7 días</button>
+        <button type="button" class="filter-pill" onclick="setFiltro('month')">Este mes</button>
+        <button type="button" class="filter-pill" onclick="setFiltro('custom')">Personalizado</button>
+      </div>
+      <div class="custom-range-grid" id="customRangeGrid" style="display:none;">
+        <div>
+          <label for="cStart" style="font-size:0.7rem;">Desde:</label>
+          <input type="date" id="cStart" onchange="aplicarRangoCustom()">
+        </div>
+        <div>
+          <label for="cEnd" style="font-size:0.7rem;">Hasta:</label>
+          <input type="date" id="cEnd" onchange="aplicarRangoCustom()">
+        </div>
+      </div>
     </div>
+
+    <!-- Lista Historial -->
+    <div id="listaRegistros" style="display:flex; flex-direction:column; gap:12px;"></div>
   </div>
 
-  <!-- 6. SECCIÓN: ANÁLISIS DE PATRONES (DASHBOARD) -->
-  <div id="vistaAnalisis" style="display:none; flex-direction:column; gap:14px;">
-    <!-- Tarjetas de métricas -->
+  <!-- SECCIÓN 2: ANÁLISIS Y GRÁFICAS -->
+  <div id="vistaAnalisis" style="display:none; flex-direction:column; gap:16px;">
+    <!-- Filtro de Fechas en Análisis -->
+    <div class="filter-bar">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label style="margin:0;">Período de análisis</label>
+        <span id="filterCountAna" style="font-size:0.78rem; color:var(--muted);">0 eventos</span>
+      </div>
+      <div class="filter-pills" id="filterPillsAna">
+        <button type="button" class="filter-pill active" onclick="setFiltro('all')">Todos</button>
+        <button type="button" class="filter-pill" onclick="setFiltro('7d')">Últimos 7 días</button>
+        <button type="button" class="filter-pill" onclick="setFiltro('month')">Este mes</button>
+        <button type="button" class="filter-pill" onclick="setFiltro('custom')">Personalizado</button>
+      </div>
+    </div>
+
+    <!-- Métricas -->
     <div class="stats-grid">
       <div class="stat-box">
         <div class="stat-num" id="statTotal">0</div>
-        <div class="stat-desc">Total crisis</div>
+        <div class="stat-desc">Total eventos</div>
       </div>
       <div class="stat-box">
-        <div class="stat-num" id="statPromedio">0 m</div>
+        <div class="stat-num" id="statPromedio">0m</div>
         <div class="stat-desc">Prom. duración</div>
       </div>
       <div class="stat-box">
         <div class="stat-num" id="statPico">--</div>
         <div class="stat-desc">Hora crítica</div>
       </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statDiaPico" style="font-size:1.05rem; margin-top:4px;">--</div>
+        <div class="stat-desc">Día frecuente</div>
+      </div>
     </div>
 
-    <!-- Gráfico Horario con resalte en color de contraste/coral -->
+    <!-- Top 3 Detonantes -->
+    <div class="card">
+      <label>Top detonantes más frecuentes</label>
+      <div id="topTriggersContainer" style="display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+
+    <!-- Gráfica Horas -->
     <div class="card">
       <label>Distribución por franja horaria (Hora del día)</label>
-      <p style="font-size:0.8rem; color:var(--muted);">Permite identificar bajadas de glucosa o picos de fatiga ejecutiva.</p>
+      <p style="font-size:0.8rem; color:var(--muted); margin-top:-4px;">Identifica bajadas de glucosa o picos de fatiga ejecutiva.</p>
       <div class="bar-chart" id="chartHoras"></div>
     </div>
 
-    <!-- Gráfico Días de la Semana -->
+    <!-- Gráfica Días -->
     <div class="card">
       <label>Distribución por día de la semana</label>
       <div class="bar-chart" id="chartDias"></div>
     </div>
   </div>
+
+  <!-- SECCIÓN 3: DATOS Y PRIVACIDAD -->
+  <div id="vistaDatos" style="display:none; flex-direction:column; gap:16px;">
+    <div class="card" style="background:linear-gradient(180deg, var(--card) 0%, var(--card-subtle) 100%);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h3 style="font-size:1.05rem; font-weight:800;">Guía de Uso y Privacidad</h3>
+          <p style="font-size:0.8rem; color:var(--muted); margin-top:2px;">Aprende a respaldar tus datos y exportar informes.</p>
+        </div>
+        <button type="button" class="btn-secondary" onclick="abrirModal('tutorialModal')">¿Cómo funciona? (Tutorial)</button>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div class="action-card">
+        <div class="action-card-text">
+          <span class="action-card-title">Exportar para el médico (CSV)</span>
+          <span class="action-card-desc">Genera una tabla limpia con los filtros actuales para Microsoft Excel o consulta médica.</span>
+        </div>
+        <button type="button" class="btn-secondary" onclick="exportarCSV()">Descargar CSV</button>
+      </div>
+
+      <div class="action-card">
+        <div class="action-card-text">
+          <span class="action-card-title">Crear Copia de Respaldo (JSON)</span>
+          <span class="action-card-desc">Guarda un archivo de seguridad completo con todos los eventos, perfil y catálogo.</span>
+        </div>
+        <button type="button" class="btn-secondary" onclick="hacerCopiaJSON()">Crear Copia</button>
+      </div>
+
+      <div class="action-card">
+        <div class="action-card-text">
+          <span class="action-card-title">Restaurar Copia (JSON)</span>
+          <span class="action-card-desc">Importa un archivo previo para restaurar todos los registros si cambiaste de dispositivo.</span>
+        </div>
+        <button type="button" class="btn-secondary" onclick="document.getElementById('fileImport').click()">Restaurar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-  /* 1. Service Worker registrado dinámicamente mediante Blob para PWA */
+  /* Service Worker Blob */
   if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
     try {
       const swCode = `
-        const CACHE_NAME = 'regulacion-pwa-v1';
+        const CACHE_NAME = 'registro-crisis-v3';
         self.addEventListener('install', (e) => self.skipWaiting());
         self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
-        self.addEventListener('fetch', (e) => {
-          e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-        });
+        self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
       `;
       const blob = new Blob([swCode], { type: 'application/javascript' });
       const swUrl = URL.createObjectURL(blob);
@@ -443,122 +526,238 @@
     } catch (e) {}
   }
 
-  /* 2. Catálogo de sugerencias iniciales y aprendizaje continuo */
-  const DEFAULT_SUGGESTIONS = {
-    chispa: [
-      'Transición abrupta de actividad',
-      'Apagar pantalla / tiempo fuera',
-      'Sobrecarga de ruidos / lugar concurrido',
-      'Frustración académica o motriz',
-      'Cambio inesperado en la rutina',
-      'Negación ante una petición o límite'
-    ],
-    lugar: [
-      'Casa / Sala',
-      'Escuela / Salón de clases',
-      'Auto / En trayecto',
-      'Supermercado / Centro comercial',
-      'Parque / Exterior',
-      'Casa de familiares'
-    ],
-    carga: [
-      'Sueño deficiente / mal descanso',
-      'Hambre / glucosa baja (HALT)',
-      'Sobrecarga sensorial acumulada',
-      'Exceso de demandas cognitivas',
-      'Dolor físico o malestar estomacal'
-    ],
-    ayudo: [
-      'Espacio en penumbra y silencio total',
-      'Cobija de peso / presión propioceptiva',
-      'Acompañamiento en calma sin hablar',
-      'Ofrecer agua fría y tiempo a solas',
-      'Música suave o audífonos con cancelación',
-      'Validar emoción en voz muy baja'
-    ],
-    empeoro: [
-      'Querer razonar con él durante la crisis',
-      'Insistir en contacto visual',
-      'Subir el volumen de voz o amenazar',
-      'Hacer múltiples preguntas seguidas',
-      'Contener físicamente con fuerza'
-    ]
-  };
-
+  const DIAS_SEMANA_ABR = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  let currentFilter = 'all';
+  let customStartDate = '';
+  let customEndDate = '';
   let timerInterval = null;
   let timerStartMs = null;
+  let tempMedDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'];
 
-  function toLocalISOString(date) {
-    const d = new Date(date);
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString().slice(0, 16);
+  /* Tema */
+  function initTheme() {
+    const saved = localStorage.getItem('app_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    actualizarBotonTema(saved);
   }
 
-  function setFechaActual() {
-    document.getElementById('fechaHora').value = toLocalISOString(new Date());
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('app_theme', next);
+    actualizarBotonTema(next);
   }
 
-  function getRegistros() {
+  function actualizarBotonTema(theme) {
+    const btn = document.getElementById('themeToggleBtn');
+    if (btn) btn.innerText = theme === 'dark' ? '☀️' : '🌙';
+  }
+
+  /* Modales */
+  function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
+  function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
+
+  /* Perfil */
+  function getProfile() {
     try {
-      return JSON.parse(localStorage.getItem('meltdown_logs') || '[]');
-    } catch (e) {
-      return [];
+      return JSON.parse(localStorage.getItem('profile_data')) || { childName: '', birthDateOrAge: '', diagnosisNotes: '', medications: [] };
+    } catch {
+      return { childName: '', birthDateOrAge: '', diagnosisNotes: '', medications: [] };
     }
   }
 
-  function getSuggestions() {
-    try {
-      const stored = localStorage.getItem('suggestions_catalog');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return {
-          chispa: Array.from(new Set([...(parsed.chispa || []), ...DEFAULT_SUGGESTIONS.chispa])),
-          lugar: Array.from(new Set([...(parsed.lugar || []), ...DEFAULT_SUGGESTIONS.lugar])),
-          carga: Array.from(new Set([...(parsed.carga || []), ...DEFAULT_SUGGESTIONS.carga])),
-          ayudo: Array.from(new Set([...(parsed.ayudo || []), ...DEFAULT_SUGGESTIONS.ayudo])),
-          empeoro: Array.from(new Set([...(parsed.empeoro || []), ...DEFAULT_SUGGESTIONS.empeoro]))
+  function renderProfileUI() {
+    const p = getProfile();
+    document.getElementById('childName').value = p.childName || '';
+    document.getElementById('birthDateOrAge').value = p.birthDateOrAge || '';
+    document.getElementById('diagnosisNotes').value = p.diagnosisNotes || '';
+
+    const badge = document.getElementById('childBadgeHeader');
+    const pill = document.getElementById('childPillText');
+    if (p.childName && p.childName.trim()) {
+      pill.innerText = `Registro de ${p.childName}`;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    renderMedicationSelector();
+    renderMedicationList();
+    renderDayPills();
+  }
+
+  function renderDayPills() {
+    const container = document.getElementById('daysPillsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    DIAS_SEMANA_ABR.forEach(d => {
+      const isSel = tempMedDays.includes(d);
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.innerText = d;
+      b.style.cssText = `padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:600; border:1px solid var(--border); cursor:pointer; background:${isSel ? 'var(--accent)' : 'var(--input-bg)'}; color:${isSel ? '#0f172a' : 'var(--text)'};`;
+      b.onclick = () => {
+        if (tempMedDays.includes(d)) tempMedDays = tempMedDays.filter(x => x !== d);
+        else tempMedDays.push(d);
+        renderDayPills();
+      };
+      container.appendChild(b);
+    });
+  }
+
+  function agregarMedicamento() {
+    const name = document.getElementById('medName').value.trim();
+    const time = document.getElementById('medTime').value || '08:00';
+    if (!name) return;
+
+    const p = getProfile();
+    p.medications.push({
+      id: Date.now().toString(),
+      name,
+      time,
+      days: tempMedDays.length > 0 ? [...tempMedDays] : ['Todos los días']
+    });
+    localStorage.setItem('profile_data', JSON.stringify(p));
+    document.getElementById('medName').value = '';
+    renderMedicationList();
+    renderMedicationSelector();
+  }
+
+  function eliminarMedicamento(id) {
+    const p = getProfile();
+    p.medications = p.medications.filter(m => m.id !== id);
+    localStorage.setItem('profile_data', JSON.stringify(p));
+    renderMedicationList();
+    renderMedicationSelector();
+  }
+
+  function renderMedicationList() {
+    const container = document.getElementById('medListContainer');
+    const p = getProfile();
+    container.innerHTML = '';
+    if (p.medications.length === 0) {
+      container.innerHTML = '<p style="font-size:0.8rem; color:var(--muted);">No hay tomas programadas actualmente.</p>';
+      return;
+    }
+    p.medications.forEach(m => {
+      const d = document.createElement('div');
+      d.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:var(--card-subtle); padding:8px 12px; border-radius:8px; border:1px solid var(--border);';
+      d.innerHTML = `
+        <div>
+          <div style="font-weight:700; font-size:0.86rem;">${escapeHtml(m.name)} <span style="color:var(--accent);">(${m.time})</span></div>
+          <div style="font-size:0.72rem; color:var(--muted);">${m.days.join(', ')}</div>
+        </div>
+        <button type="button" class="btn-danger" onclick="eliminarMedicamento('${m.id}')">Eliminar</button>
+      `;
+      container.appendChild(d);
+    });
+  }
+
+  function renderMedicationSelector() {
+    const sel = document.getElementById('medRelated');
+    const p = getProfile();
+    sel.innerHTML = '<option value="">Ninguna / No relacionada</option>';
+    p.medications.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = `${m.name} (${m.time})`;
+      opt.innerText = `💊 ${m.name} — ${m.time} (${m.days.join(', ')})`;
+      sel.appendChild(opt);
+    });
+    const other = document.createElement('option');
+    other.value = 'Otra toma no programada';
+    other.innerText = 'Otra toma no programada';
+    sel.appendChild(other);
+  }
+
+  function guardarPerfil(e) {
+    e.preventDefault();
+    const p = getProfile();
+    p.childName = document.getElementById('childName').value.trim();
+    p.birthDateOrAge = document.getElementById('birthDateOrAge').value.trim();
+    p.diagnosisNotes = document.getElementById('diagnosisNotes').value.trim();
+    localStorage.setItem('profile_data', JSON.stringify(p));
+    renderProfileUI();
+    verificarProximidadMedicacion();
+    cerrarModal('profileModal');
+  }
+
+  /* Verificación de proximidad con medicación programada */
+  function verificarProximidadMedicacion() {
+    const fechaVal = document.getElementById('fechaHora').value;
+    const alertBox = document.getElementById('medAlertBox');
+    const alertText = document.getElementById('medAlertText');
+    const btnVincular = document.getElementById('btnVincularMed');
+
+    if (!fechaVal) {
+      alertBox.style.display = 'none';
+      return;
+    }
+
+    const eventDate = new Date(fechaVal);
+    if (isNaN(eventDate.getTime())) {
+      alertBox.style.display = 'none';
+      return;
+    }
+
+    const p = getProfile();
+    if (!p.medications || p.medications.length === 0) {
+      alertBox.style.display = 'none';
+      return;
+    }
+
+    const dayIdx = eventDate.getDay();
+    const daysMap = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const dayName = daysMap[dayIdx];
+    const eventMinutes = eventDate.getHours() * 60 + eventDate.getMinutes();
+
+    let closest = null;
+
+    for (const med of p.medications) {
+      const appliesDay = med.days.includes(dayName) || med.days.includes('Todos los días') || med.days.length === 0;
+      if (!appliesDay) continue;
+
+      const [medH, medM] = med.time.split(':').map(Number);
+      if (isNaN(medH) || isNaN(medM)) continue;
+      const medMinutes = medH * 60 + medM;
+
+      const diff = eventMinutes - medMinutes;
+      if (Math.abs(diff) <= 75) {
+        let msg = '';
+        if (diff === 0) {
+          msg = `Coincide exactamente con la toma programada de "${med.name}" (${med.time}).`;
+        } else if (diff > 0) {
+          msg = `Ocurrió ${diff} min después de la toma programada de "${med.name}" (${med.time}).`;
+        } else {
+          msg = `Ocurrió ${Math.abs(diff)} min antes de la toma programada de "${med.name}" (${med.time}).`;
+        }
+
+        if (!closest || Math.abs(diff) < Math.abs(closest.diffMinutes)) {
+          closest = { med, diff, message: msg };
+        }
+      }
+    }
+
+    if (closest) {
+      alertText.innerText = closest.message;
+      alertBox.style.display = 'flex';
+      const targetVal = `${closest.med.name} (${closest.med.time})`;
+      const currentSel = document.getElementById('medRelated').value;
+      if (currentSel === targetVal) {
+        btnVincular.style.display = 'none';
+      } else {
+        btnVincular.style.display = 'inline-block';
+        btnVincular.onclick = () => {
+          document.getElementById('medRelated').value = targetVal;
+          btnVincular.style.display = 'none';
         };
       }
-    } catch (e) {}
-    return DEFAULT_SUGGESTIONS;
+    } else {
+      alertBox.style.display = 'none';
+    }
   }
 
-  function renderDatalists() {
-    const sugg = getSuggestions();
-    renderDatalistOptions('dl-chispa', sugg.chispa);
-    renderDatalistOptions('dl-lugar', sugg.lugar);
-    renderDatalistOptions('dl-carga', sugg.carga);
-    renderDatalistOptions('dl-ayudo', sugg.ayudo);
-    renderDatalistOptions('dl-empeoro', sugg.empeoro);
-  }
-
-  function renderDatalistOptions(id, items) {
-    const dl = document.getElementById(id);
-    if (!dl) return;
-    dl.innerHTML = '';
-    (items || []).forEach(item => {
-      const opt = document.createElement('option');
-      opt.value = item;
-      dl.appendChild(opt);
-    });
-  }
-
-  function updateSuggestionsCatalog(nuevo) {
-    const current = getSuggestions();
-    const fields = ['chispa', 'lugar', 'carga', 'ayudo', 'empeoro'];
-    fields.forEach(f => {
-      const val = (nuevo[f] || '').trim();
-      if (val && !current[f].includes(val)) {
-        current[f].unshift(val);
-      }
-    });
-    try {
-      localStorage.setItem('suggestions_catalog', JSON.stringify(current));
-    } catch (e) {}
-    renderDatalists();
-  }
-
-  /* 3. Cronómetro persistente */
+  /* Cronómetro */
   function initTimer() {
     const saved = localStorage.getItem('crisis_timer_start');
     if (saved) {
@@ -572,10 +771,10 @@
     }
   }
 
-  function formatTime(totalSecs) {
-    const m = Math.floor(totalSecs / 60);
-    const s = totalSecs % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   }
 
   function startTimerTicker() {
@@ -586,8 +785,8 @@
 
   function updateTimerDisplay() {
     if (!timerStartMs) return;
-    const elapsedSecs = Math.max(0, Math.floor((Date.now() - timerStartMs) / 1000));
-    document.getElementById('timerDisplay').innerText = formatTime(elapsedSecs);
+    const elapsed = Math.max(0, Math.floor((Date.now() - timerStartMs) / 1000));
+    document.getElementById('timerDisplay').innerText = formatTime(elapsed);
   }
 
   function setTimerUIActive(isActive) {
@@ -603,17 +802,16 @@
       container.classList.add('active');
       btn.className = 'timer-btn timer-btn-stop';
       btn.innerHTML = '⏹ Detener y Calcular';
-      badge.className = 'timer-badge running';
       badge.style.display = 'inline-flex';
       hint.style.display = 'none';
       displayWrap.style.display = 'flex';
       cancelWrap.style.display = 'flex';
       const d = new Date(timerStartMs);
-      startInfo.innerText = `Iniciada a las ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+      startInfo.innerText = `Iniciado a las ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
     } else {
       container.classList.remove('active');
       btn.className = 'timer-btn timer-btn-start';
-      btn.innerHTML = '⏱ Iniciar Crisis';
+      btn.innerHTML = '⏱ Iniciar Registro';
       badge.style.display = 'none';
       hint.style.display = 'inline';
       displayWrap.style.display = 'none';
@@ -639,7 +837,10 @@
       timerStartMs = null;
       setTimerUIActive(false);
 
-      mostrarAlertaTimer(`Crisis detenida: ${mins} min calculados e insertados en el formulario.`);
+      const alertEl = document.getElementById('timerAlert');
+      document.getElementById('timerAlertText').innerText = `✓ Conteo detenido: ${mins} min calculados e insertados.`;
+      alertEl.style.display = 'flex';
+      verificarProximidadMedicacion();
     }
   }
 
@@ -650,62 +851,100 @@
     setTimerUIActive(false);
   }
 
-  function mostrarAlertaTimer(msg) {
-    const alert = document.getElementById('timerAlert');
-    document.getElementById('timerAlertText').innerText = '✓ ' + msg;
-    alert.style.display = 'flex';
+  function cerrarAlertaTimer() { document.getElementById('timerAlert').style.display = 'none'; }
+
+  function toLocalISOString(date) {
+    const d = new Date(date);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 16);
   }
 
-  function cerrarAlertaTimer() {
-    document.getElementById('timerAlert').style.display = 'none';
+  function setFechaActual() { document.getElementById('fechaHora').value = toLocalISOString(new Date()); }
+
+  /* Filtro de Fechas */
+  function setFiltro(tipo) {
+    currentFilter = tipo;
+    document.querySelectorAll('#filterPillsHist .filter-pill, #filterPillsAna .filter-pill').forEach(b => {
+      b.classList.remove('active');
+      if (b.innerText.toLowerCase().includes(tipo === 'all' ? 'todos' : tipo === '7d' ? '7 días' : tipo === 'month' ? 'mes' : 'personalizado')) {
+        b.classList.add('active');
+      }
+    });
+
+    const customDiv = document.getElementById('customRangeGrid');
+    if (tipo === 'custom') customDiv.style.display = 'grid';
+    else customDiv.style.display = 'none';
+
+    renderFilteredData();
   }
 
-  /* 6. Navegación por pestañas */
-  function cambiarVista(vista) {
-    const vistaReg = document.getElementById('vistaRegistro');
-    const vistaAna = document.getElementById('vistaAnalisis');
-    const btnReg = document.getElementById('tabRegistroBtn');
-    const btnAna = document.getElementById('tabAnalisisBtn');
-
-    if (vista === 'registro') {
-      vistaReg.style.display = 'flex';
-      vistaAna.style.display = 'none';
-      btnReg.classList.add('active');
-      btnAna.classList.remove('active');
-      renderRegistros();
-    } else {
-      vistaReg.style.display = 'none';
-      vistaAna.style.display = 'flex';
-      btnAna.classList.add('active');
-      btnReg.classList.remove('active');
-      renderAnalisis();
-    }
+  function aplicarRangoCustom() {
+    customStartDate = document.getElementById('cStart').value;
+    customEndDate = document.getElementById('cEnd').value;
+    renderFilteredData();
   }
 
-  /* Renderizado de historial reciente */
-  function renderRegistros() {
+  function getRegistros() {
+    try { return JSON.parse(localStorage.getItem('meltdown_logs')) || []; }
+    catch { return []; }
+  }
+
+  function getFilteredRegistros() {
+    const all = getRegistros();
+    const now = new Date();
+    return all.filter(reg => {
+      const d = new Date(reg.fechaHora);
+      if (isNaN(d.getTime())) return true;
+      if (currentFilter === 'all') return true;
+      if (currentFilter === '7d') {
+        const lim = new Date();
+        lim.setDate(now.getDate() - 7);
+        return d >= lim;
+      }
+      if (currentFilter === 'month') {
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      }
+      if (currentFilter === 'custom') {
+        if (customStartDate && d < new Date(customStartDate + 'T00:00:00')) return false;
+        if (customEndDate && d > new Date(customEndDate + 'T23:59:59')) return false;
+        return true;
+      }
+      return true;
+    });
+  }
+
+  function renderFilteredData() {
+    const all = getRegistros();
+    const filtered = getFilteredRegistros();
+    document.getElementById('filterCountHist').innerText = `${filtered.length} de ${all.length} eventos`;
+    document.getElementById('filterCountAna').innerText = `${filtered.length} eventos analizados`;
+    renderHistorial(filtered);
+    renderAnalisis(filtered);
+  }
+
+  function renderHistorial(filtered) {
     const list = document.getElementById('listaRegistros');
-    const logs = getRegistros();
-    document.getElementById('contador').innerText = `${logs.length} eventos`;
     list.innerHTML = '';
-
-    if (logs.length === 0) {
-      list.innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">No hay registros cargados aún.</p>';
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="card" style="text-align:center; padding:24px;"><p style="color:var(--muted); font-size:0.88rem;">No hay eventos registrados en este rango de fechas.</p></div>';
       return;
     }
 
-    logs.forEach((reg, index) => {
+    filtered.forEach(reg => {
       const item = document.createElement('div');
       item.className = 'item';
       const fechaFormatted = new Date(reg.fechaHora).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
-      
       let html = `
         <div class="item-header">
           <span>${fechaFormatted} • ${reg.duracion} min</span>
-          <button class="btn-danger" onclick="eliminarRegistro(${index})">Borrar</button>
+          <button class="btn-danger" onclick="eliminarRegistro('${reg.id}')">Borrar</button>
         </div>
         <div class="item-title">Chispa: ${escapeHtml(reg.chispa)}</div>
       `;
+
+      if (reg.medicacionRelacionada) {
+        html += `<span class="med-badge">💊 Medicación: ${escapeHtml(reg.medicacionRelacionada)}</span>`;
+      }
 
       if (reg.lugar || reg.carga) {
         html += `<div style="font-size:0.825rem; color:var(--muted);">`;
@@ -714,67 +953,80 @@
         html += `</div>`;
       }
 
-      if (reg.conducta) {
-        html += `<div style="font-size:0.8rem; color:var(--text); opacity:0.9;"><b>Conducta:</b> ${escapeHtml(reg.conducta)}</div>`;
-      }
-
-      if (reg.ayudo) {
-        html += `<div style="font-size:0.8rem; color:var(--success);"><b>Ayudó:</b> ${escapeHtml(reg.ayudo)}</div>`;
-      }
-      if (reg.empeoro) {
-        html += `<div style="font-size:0.8rem; color:var(--danger);"><b>Empeoró:</b> ${escapeHtml(reg.empeoro)}</div>`;
-      }
+      if (reg.conducta) html += `<div style="font-size:0.82rem; color:var(--text); opacity:0.9;"><b>Conducta:</b> ${escapeHtml(reg.conducta)}</div>`;
+      if (reg.ayudo) html += `<div style="font-size:0.82rem; color:var(--success);"><b>Ayudó:</b> ${escapeHtml(reg.ayudo)}</div>`;
+      if (reg.empeoro) html += `<div style="font-size:0.82rem; color:var(--danger);"><b>Empeoró:</b> ${escapeHtml(reg.empeoro)}</div>`;
 
       item.innerHTML = html;
       list.appendChild(item);
     });
   }
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-  }
-
-  /* 6. Dashboard de análisis */
-  function renderAnalisis() {
-    const logs = getRegistros();
-    const total = logs.length;
+  function renderAnalisis(filtered) {
+    const total = filtered.length;
     document.getElementById('statTotal').innerText = total;
 
     if (total === 0) {
-      document.getElementById('statPromedio').innerText = '0 m';
+      document.getElementById('statPromedio').innerText = '0m';
       document.getElementById('statPico').innerText = '--';
+      document.getElementById('statDiaPico').innerText = '--';
+      document.getElementById('topTriggersContainer').innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Sin registros suficientes.</p>';
       document.getElementById('chartHoras').innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Sin datos suficientes.</p>';
       document.getElementById('chartDias').innerHTML = '<p style="color:var(--muted); font-size:0.85rem;">Sin datos suficientes.</p>';
       return;
     }
 
-    const duracionProm = Math.round(logs.reduce((acc, cur) => acc + Number(cur.duracion || 0), 0) / total);
-    document.getElementById('statPromedio').innerText = `${duracionProm} m`;
+    const duracionProm = Math.round(filtered.reduce((acc, cur) => acc + Number(cur.duracion || 0), 0) / total);
+    document.getElementById('statPromedio').innerText = `${duracionProm}m`;
 
     const horasCount = Array(24).fill(0);
     const diasCount = Array(7).fill(0);
+    const triggerCounts = {};
 
-    logs.forEach(reg => {
+    filtered.forEach(reg => {
       const d = new Date(reg.fechaHora);
       if (!isNaN(d.getTime())) {
         horasCount[d.getHours()]++;
         diasCount[d.getDay()]++;
       }
+      const trig = (reg.chispa || '').trim();
+      if (trig) triggerCounts[trig] = (triggerCounts[trig] || 0) + 1;
     });
 
     const maxHora = Math.max(...horasCount);
     const horaPicoIdx = horasCount.indexOf(maxHora);
     document.getElementById('statPico').innerText = maxHora > 0 ? `${horaPicoIdx}:00` : '--';
 
+    const diasNombres = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const maxDia = Math.max(...diasCount);
+    const diaPicoIdx = diasCount.indexOf(maxDia);
+    document.getElementById('statDiaPico').innerText = maxDia > 0 ? diasNombres[diaPicoIdx] : '--';
+
+    // Top 3 Triggers
+    const topTriggers = Object.entries(triggerCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    const topContainer = document.getElementById('topTriggersContainer');
+    topContainer.innerHTML = '';
+    topTriggers.forEach(([trig, count], idx) => {
+      const pct = Math.round((count / total) * 100);
+      const row = document.createElement('div');
+      row.className = 'top-trigger-item';
+      row.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-weight:800; color:var(--accent);">#${idx + 1}</span>
+          <span style="font-weight:600;">${escapeHtml(trig)}</span>
+        </div>
+        <span style="font-size:0.8rem; color:var(--muted); font-weight:600;">${count} veces (${pct}%)</span>
+      `;
+      topContainer.appendChild(row);
+    });
+
+    // Chart Horas
     const chartHoras = document.getElementById('chartHoras');
     chartHoras.innerHTML = '';
-    
     for (let h = 6; h <= 22; h += 2) {
       const sum = horasCount[h] + (horasCount[h + 1] || 0);
       const pct = maxHora > 0 ? (sum / (maxHora * 1.5)) * 100 : 0;
       const isPeak = (h === horaPicoIdx || h + 1 === horaPicoIdx) && sum > 0;
-
       const row = document.createElement('div');
       row.className = 'bar-row';
       row.innerHTML = `
@@ -787,11 +1039,10 @@
       chartHoras.appendChild(row);
     }
 
+    // Chart Días
     const nombresDias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-    const maxDia = Math.max(...diasCount);
     const chartDias = document.getElementById('chartDias');
     chartDias.innerHTML = '';
-
     nombresDias.forEach((dia, idx) => {
       const count = diasCount[idx];
       const pct = maxDia > 0 ? (count / maxDia) * 100 : 0;
@@ -808,12 +1059,25 @@
     });
   }
 
-  /* 4. Guardar registro y enriquecer catálogo de autocompletado */
+  function cambiarVista(vista) {
+    document.getElementById('vistaRegistro').style.display = vista === 'registro' ? 'flex' : 'none';
+    document.getElementById('vistaAnalisis').style.display = vista === 'analisis' ? 'flex' : 'none';
+    document.getElementById('vistaDatos').style.display = vista === 'datos' ? 'flex' : 'none';
+
+    document.getElementById('tabBtnRegistro').className = `tab-btn ${vista === 'registro' ? 'active' : ''}`;
+    document.getElementById('tabBtnAnalisis').className = `tab-btn ${vista === 'analisis' ? 'active' : ''}`;
+    document.getElementById('tabBtnDatos').className = `tab-btn ${vista === 'datos' ? 'active' : ''}`;
+
+    renderFilteredData();
+  }
+
   function guardarRegistro(e) {
     e.preventDefault();
     const nuevo = {
+      id: Date.now().toString(),
       fechaHora: document.getElementById('fechaHora').value,
       duracion: document.getElementById('duracion').value,
+      medicacionRelacionada: document.getElementById('medRelated').value || undefined,
       chispa: document.getElementById('chispa').value,
       lugar: document.getElementById('lugar').value,
       carga: document.getElementById('carga').value,
@@ -826,44 +1090,65 @@
     logs.unshift(nuevo);
     localStorage.setItem('meltdown_logs', JSON.stringify(logs));
 
-    // Guardar opciones en catálogo de sugerencias datalist
     updateSuggestionsCatalog(nuevo);
 
     document.getElementById('logForm').reset();
     setFechaActual();
     cerrarAlertaTimer();
-    renderRegistros();
+    renderFilteredData();
   }
 
-  /* 5. Eliminar individual */
-  function eliminarRegistro(index) {
-    let confirmed = false;
-    try {
-      confirmed = confirm('¿Eliminar este registro?');
-    } catch (e) {
-      confirmed = true;
-    }
-
-    if (confirmed) {
-      const logs = getRegistros();
-      logs.splice(index, 1);
+  function eliminarRegistro(id) {
+    if (confirm('¿Eliminar este evento del registro?')) {
+      let logs = getRegistros();
+      logs = logs.filter(item => item.id !== id);
       localStorage.setItem('meltdown_logs', JSON.stringify(logs));
-      renderRegistros();
+      renderFilteredData();
     }
   }
 
-  /* 5. Exportar CSV con UTF-8 BOM */
-  function exportarCSV() {
-    const logs = getRegistros();
-    if (logs.length === 0) {
-      alert('No hay datos para exportar.');
-      return;
-    }
+  /* Sugerencias y Datalists */
+  function getSuggestions() {
+    try {
+      return JSON.parse(localStorage.getItem('suggestions_catalog')) || DEFAULT_SUGGESTIONS;
+    } catch { return DEFAULT_SUGGESTIONS; }
+  }
 
-    const headers = ['Fecha y Hora', 'Duracion (min)', 'Detonante', 'Lugar', 'Carga Previa', 'Conducta', 'Que Ayudo', 'Que Empeoro'];
-    const rows = logs.map(r => [
+  function renderDatalists() {
+    const s = getSuggestions();
+    ['chispa', 'lugar', 'carga', 'ayudo', 'empeoro'].forEach(id => {
+      const dl = document.getElementById(`dl-${id}`);
+      if (dl) {
+        dl.innerHTML = '';
+        (s[id] || []).forEach(opt => {
+          const el = document.createElement('option');
+          el.value = opt;
+          dl.appendChild(el);
+        });
+      }
+    });
+  }
+
+  function updateSuggestionsCatalog(nuevo) {
+    const s = getSuggestions();
+    ['chispa', 'lugar', 'carga', 'ayudo', 'empeoro'].forEach(f => {
+      const val = (nuevo[f] || '').trim();
+      if (val && !s[f].includes(val)) s[f].unshift(val);
+    });
+    localStorage.setItem('suggestions_catalog', JSON.stringify(s));
+    renderDatalists();
+  }
+
+  /* Exportar CSV y JSON */
+  function exportarCSV() {
+    const filtered = getFilteredRegistros();
+    if (filtered.length === 0) return alert('No hay eventos en el rango seleccionado para exportar.');
+
+    const headers = ['Fecha y Hora', 'Duracion (min)', 'Medicacion Relacionada', 'Detonante', 'Lugar', 'Carga Previa', 'Conducta', 'Que Ayudo', 'Que Empeoro'];
+    const rows = filtered.map(r => [
       `"${r.fechaHora}"`,
       r.duracion,
+      `"${(r.medicacionRelacionada || '').replace(/"/g, '""')}"`,
       `"${(r.chispa || '').replace(/"/g, '""')}"`,
       `"${(r.lugar || '').replace(/"/g, '""')}"`,
       `"${(r.carga || '').replace(/"/g, '""')}"`,
@@ -872,21 +1157,92 @@
       `"${(r.empeoro || '').replace(/"/g, '""')}"`
     ]);
 
+    const p = getProfile();
     const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `bitacora_regulacion_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute('download', `registro_eventos_${p.childName ? p.childName.replace(/\s+/g, '_') + '_' : ''}${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }
 
+  function hacerCopiaJSON() {
+    const logs = getRegistros();
+    if (logs.length === 0) return alert('No hay datos guardados para respaldar.');
+
+    const data = {
+      app: 'Registro de eventos y crisis',
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      profile: getProfile(),
+      logs: logs,
+      suggestions: getSuggestions()
+    };
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `respaldo_eventos_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  function importarJSON(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      try {
+        const parsed = JSON.parse(evt.target.result);
+        if (Array.isArray(parsed.logs)) {
+          if (confirm(`Se encontraron ${parsed.logs.length} eventos en la copia de seguridad. ¿Deseas importarlos?`)) {
+            localStorage.setItem('meltdown_logs', JSON.stringify(parsed.logs));
+            if (parsed.profile) localStorage.setItem('profile_data', JSON.stringify(parsed.profile));
+            if (parsed.suggestions) localStorage.setItem('suggestions_catalog', JSON.stringify(parsed.suggestions));
+
+            renderProfileUI();
+            renderDatalists();
+            renderFilteredData();
+            alert('Copia de seguridad restaurada con éxito.');
+          }
+        } else {
+          alert('El archivo no contiene un formato de respaldo válido.');
+        }
+      } catch {
+        alert('Error al leer el archivo JSON.');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  const DEFAULT_SUGGESTIONS = {
+    chispa: ['Transición abrupta de actividad', 'Apagar pantalla / tiempo fuera', 'Sobrecarga de ruidos / lugar concurrido', 'Frustración ante una tarea', 'Cambio inesperado en la rutina', 'Negación o límite verbal'],
+    lugar: ['Casa / Sala', 'Escuela / Salón', 'Auto / En trayecto', 'Supermercado / Tienda', 'Parque / Exterior', 'Casa de familiares'],
+    carga: ['Sueño deficiente / mal descanso', 'Hambre / glucosa baja (HALT)', 'Sobrecarga sensorial acumulada', 'Fatiga cognitiva / día largo', 'Malestar físico o dolor'],
+    ayudo: ['Espacio en penumbra y silencio total', 'Cobija de peso / presión propioceptiva', 'Acompañamiento en calma sin hablar', 'Ofrecer agua fría y tiempo a solas', 'Música suave o audífonos de cancelación', 'Validar emoción en voz muy baja'],
+    empeoro: ['Querer razonar durante la crisis', 'Insistir en contacto visual', 'Subir el volumen de voz o amenazar', 'Hacer múltiples preguntas seguidas', 'Contener físicamente con fuerza']
+  };
+
   // Inicialización
+  initTheme();
   setFechaActual();
   initTimer();
+  renderProfileUI();
   renderDatalists();
-  renderRegistros();
+  renderFilteredData();
+  verificarProximidadMedicacion();
 </script>
 </body>
 </html>
